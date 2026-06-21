@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+
+# Local image-slot edit state
+.image-slots.state.json
+.juggler/
