@@ -1,0 +1,521 @@
+// juggler.studio bootstrap module.
+//
+// Boot sequence (per scratch/studio-rendezvous-protocol.md "Boot sequence"):
+//   1. read <id> from location.pathname
+//   2. register sw.js and wait for it to control this page (clients.claim)
+//   3. open the DO websocket (role=guest), receive rendezvous-owned ICE config,
+//      create RTCPeerConnection + DataChannel("juggler"), gather ICE, signal the
+//      offer to the host, receive the answer, wait for the channel to open
+//   4. wire the sw<->page relay (the page owns the DataChannel)
+//   5. version guard: fetch /api/version over the channel
+//   6. fetch the real index.html over the channel and inject it WITHOUT
+//      navigating (a reload would kill the channel)
+//
+// Any failure in steps 1-3 -> the "direct connection isn't possible" panel and
+// stop. No relay fallback (P2P-or-bust).
+
+// Bumped when the http-over-DC / bootstrap protocol changes incompatibly. The
+// binary advertises its own value at /api/version (field `protocolVersion`).
+const BOOTSTRAP_PROTOCOL_VERSION = 2;
+
+// Must match web/js/services/websocket.js exactly — the host and the realtime
+// client (step 7) speak the same envelope on this channel.
+const DC_CHUNK_TYPE = '__juggler_dc_chunk';
+const DC_CHUNK_SIZE = 16 * 1024;
+
+const HTTP_REQ_TYPE = '__juggler_http_req';
+const HTTP_RES_TYPE = '__juggler_http_res';
+
+const ID_RE = /^[A-Za-z0-9_-]{16,}$/;
+
+const ICE_GATHER_CAP_MS = 5000;
+const DC_OPEN_CAP_MS = 8000;
+const SIGNAL_CAP_MS = 15000;
+const HTTP_TIMEOUT_MS = 30000;
+const BRIDGE_REGISTER_CAP_MS = 5000;
+
+function showState(which) {
+  for (const name of ['connecting', 'fail', 'update']) {
+    const el = document.getElementById('state-' + name);
+    if (el) el.hidden = name !== which;
+  }
+}
+
+// Retry = reload the shell. The Worker re-serves bootstrap.html fresh and boot()
+// re-runs the whole RTCPeerConnection/DataChannel sequence from scratch, with no
+// half-open peer connection left over from the failed attempt.
+const retryBtn = document.getElementById('retry-btn');
+if (retryBtn) retryBtn.addEventListener('click', () => location.reload());
+
+// ---------------------------------------------------------------------------
+// DataChannel transport: chunking + http-over-DC client, plus a hook for the
+// realtime client (step 7) to adopt this same channel.
+// ---------------------------------------------------------------------------
+
+let dc = null;
+let dcChunkSeq = 0;
+const incomingChunks = new Map(); // id -> { total, parts, received }
+const pendingHttp = new Map(); // reqid -> { resolve, reject, timer }
+let httpSeq = 0;
+let realtimeHandler = null; // step 7 registers a handler for non-http frames
+// Realtime frames that arrive before step 7's handler registers. The host
+// pushes its one-shot session-init frame (and a providers snapshot) the instant
+// the DataChannel opens — well before the injected app boots and adopts the
+// channel — so without this buffer those frames would hit the null handler below
+// and be lost, leaving the app stuck at "No session loaded". Flushed in exact
+// arrival order by setRealtimeHandler.
+const realtimeBuffer = [];
+
+function wireDataChannel(channel) {
+  dc = channel;
+  channel.binaryType = 'arraybuffer';
+  channel.onmessage = (e) => handleFrame(e.data);
+}
+
+function handleFrame(raw) {
+  if (typeof raw !== 'string') {
+    // The protocol is all JSON text frames; ignore stray binary.
+    return;
+  }
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return;
+  }
+
+  if (data.type === DC_CHUNK_TYPE) {
+    reassembleChunk(data);
+    return;
+  }
+  if (data.type === HTTP_RES_TYPE) {
+    resolveHttp(data);
+    return;
+  }
+  // Everything else is the realtime WS protocol. Before the app adopts the
+  // channel there is no handler, so buffer in arrival order; setRealtimeHandler
+  // flushes the buffer before going live. Afterwards step 7's handler consumes
+  // each frame directly.
+  if (realtimeHandler) {
+    realtimeHandler(raw);
+  } else {
+    realtimeBuffer.push(raw);
+  }
+}
+
+function reassembleChunk(chunk) {
+  if (
+    typeof chunk.id !== 'string' ||
+    typeof chunk.index !== 'number' ||
+    typeof chunk.total !== 'number' ||
+    typeof chunk.data !== 'string'
+  ) {
+    return;
+  }
+  if (chunk.total <= 0 || chunk.index < 0 || chunk.index >= chunk.total) return;
+  let entry = incomingChunks.get(chunk.id);
+  if (!entry) {
+    entry = { total: chunk.total, parts: new Array(chunk.total), received: 0 };
+    incomingChunks.set(chunk.id, entry);
+  }
+  if (entry.total !== chunk.total) {
+    incomingChunks.delete(chunk.id);
+    return;
+  }
+  if (entry.parts[chunk.index] === undefined) {
+    entry.parts[chunk.index] = chunk.data;
+    entry.received++;
+  }
+  if (entry.received === entry.total) {
+    incomingChunks.delete(chunk.id);
+    handleFrame(entry.parts.join(''));
+  }
+}
+
+// Send a text frame, applying the same __juggler_dc_chunk envelope as
+// web/js/services/websocket.js when it exceeds the 16 KiB ceiling.
+function sendFrame(text) {
+  if (!dc || dc.readyState !== 'open') throw new Error('datachannel not open');
+  if (text.length > DC_CHUNK_SIZE) {
+    const id = `${Date.now().toString(36)}-${(++dcChunkSeq).toString(36)}`;
+    const total = Math.ceil(text.length / DC_CHUNK_SIZE);
+    for (let i = 0; i < total; i++) {
+      dc.send(JSON.stringify({
+        type: DC_CHUNK_TYPE,
+        id,
+        index: i,
+        total,
+        data: text.slice(i * DC_CHUNK_SIZE, (i + 1) * DC_CHUNK_SIZE),
+      }));
+    }
+    return;
+  }
+  dc.send(text);
+}
+
+/**
+ * Tunnel one HTTP request over the DataChannel. Body is always base64 (uniform
+ * for binary assets). Resolves { status, headers, body(base64) }.
+ */
+function dcFetch(method, path, headers, bodyB64) {
+  const id = `h${(++httpSeq).toString(36)}-${Date.now().toString(36)}`;
+  const frame = JSON.stringify({
+    type: HTTP_REQ_TYPE,
+    id,
+    method,
+    path,
+    headers: headers || {},
+    body: bodyB64 || '',
+  });
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      pendingHttp.delete(id);
+      reject(new Error('dc http timeout: ' + method + ' ' + path));
+    }, HTTP_TIMEOUT_MS);
+    pendingHttp.set(id, { resolve, reject, timer });
+    try {
+      sendFrame(frame);
+    } catch (err) {
+      clearTimeout(timer);
+      pendingHttp.delete(id);
+      reject(err);
+    }
+  });
+}
+
+function resolveHttp(data) {
+  const pending = pendingHttp.get(data.id);
+  if (!pending) return;
+  clearTimeout(pending.timer);
+  pendingHttp.delete(data.id);
+  pending.resolve({
+    status: data.status,
+    headers: data.headers || {},
+    body: data.body || '',
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Service worker: register, wait for control, and relay its tunneled fetches.
+// ---------------------------------------------------------------------------
+
+async function ensureServiceWorker() {
+  if (!('serviceWorker' in navigator)) throw new Error('serviceworker-unsupported');
+  await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+  await navigator.serviceWorker.ready;
+  if (navigator.serviceWorker.controller) return;
+  // sw.js calls clients.claim() on activate, so control arrives without a
+  // reload — wait for it (capped; failure to claim is a hard boot failure
+  // because injected assets must route through the SW).
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('sw-control-timeout')), 8000);
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (navigator.serviceWorker.controller) {
+        clearTimeout(timer);
+        resolve();
+      }
+    });
+  });
+}
+
+function wireServiceWorkerRelay() {
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    const msg = e.data;
+    if (!msg || msg.type !== '__juggler_sw_req') return;
+    const port = e.ports[0];
+    if (!port) return;
+    const r = msg.payload;
+    dcFetch(r.method, r.path, r.headers, r.body)
+      .then((res) => port.postMessage(res))
+      .catch(() => port.postMessage({
+        status: 504,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+        body: utf8ToBase64('juggler.studio: datachannel fetch failed'),
+      }));
+  });
+}
+
+// Register THIS page as the SW's bridging client. The SW only tunnels requests
+// from registered clients (client-scoped passthrough so the Pages marketing
+// site on this shared origin is untouched), so we must register — and await the
+// ack — before the injected app issues any SW-routed fetch.
+function registerBridge() {
+  return new Promise((resolve, reject) => {
+    const ctrl = navigator.serviceWorker.controller;
+    if (!ctrl) return reject(new Error('no-sw-controller'));
+    const channel = new MessageChannel();
+    const timer = setTimeout(() => {
+      try { channel.port1.close(); } catch { /* noop */ }
+      reject(new Error('bridge-register-timeout'));
+    }, BRIDGE_REGISTER_CAP_MS);
+    channel.port1.onmessage = (e) => {
+      clearTimeout(timer);
+      try { channel.port1.close(); } catch { /* noop */ }
+      const d = e.data;
+      if (d && d.type === 'bridge-ack' && d.ok) resolve();
+      else reject(new Error('bridge-register-rejected'));
+    };
+    ctrl.postMessage({ type: 'bridge-register' }, [channel.port2]);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// WebRTC + signaling.
+// ---------------------------------------------------------------------------
+
+function waitIceComplete(pc, capMs) {
+  return new Promise((resolve) => {
+    if (pc.iceGatheringState === 'complete') return resolve();
+    const cap = setTimeout(resolve, capMs);
+    pc.addEventListener('icegatheringstatechange', () => {
+      if (pc.iceGatheringState === 'complete') {
+        clearTimeout(cap);
+        resolve();
+      }
+    });
+  });
+}
+
+function waitDcOpen(channel, capMs) {
+  return new Promise((resolve, reject) => {
+    if (channel.readyState === 'open') return resolve();
+    const cap = setTimeout(() => reject(new Error('dc-open-timeout')), capMs);
+    channel.addEventListener('open', () => { clearTimeout(cap); resolve(); }, { once: true });
+    channel.addEventListener('error', () => { clearTimeout(cap); reject(new Error('dc-error')); }, { once: true });
+  });
+}
+
+// Open the DO websocket as guest and resolve with rendezvous-owned ICE config.
+function connectSignal(id) {
+  return new Promise((resolve, reject) => {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${proto}//${location.host}/c/${id}/signal?role=guest`);
+    const timer = setTimeout(() => {
+      try { ws.close(); } catch { /* noop */ }
+      reject(new Error('signal-config-timeout'));
+    }, SIGNAL_CAP_MS);
+
+    ws.onmessage = (e) => {
+      let m;
+      try { m = JSON.parse(typeof e.data === 'string' ? e.data : ''); } catch { return; }
+      if (!m || typeof m.type !== 'string') return;
+      if (m.type === 'config') {
+        if (m.protocolVersion !== BOOTSTRAP_PROTOCOL_VERSION) {
+          clearTimeout(timer);
+          try { ws.close(); } catch { /* noop */ }
+          reject(new Error('signal-protocol-mismatch'));
+          return;
+        }
+        if (!Array.isArray(m.iceServers) || m.iceServers.length === 0) {
+          clearTimeout(timer);
+          try { ws.close(); } catch { /* noop */ }
+          reject(new Error('signal-config-missing-ice'));
+          return;
+        }
+        clearTimeout(timer);
+        resolve({ ws, iceServers: m.iceServers });
+      } else if (m.type === 'error') {
+        clearTimeout(timer);
+        try { ws.close(); } catch { /* noop */ }
+        reject(new Error('signal-error:' + m.code));
+      }
+    };
+    ws.onerror = () => { clearTimeout(timer); reject(new Error('signal-ws-error')); };
+  });
+}
+
+// Send the offer on an already-configured DO websocket; resolve with the answer.
+function exchangeSdp(ws, offer) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      try { ws.close(); } catch { /* noop */ }
+      reject(new Error('signal-answer-timeout'));
+    }, SIGNAL_CAP_MS);
+
+    ws.onmessage = (e) => {
+      let m;
+      try { m = JSON.parse(typeof e.data === 'string' ? e.data : ''); } catch { return; }
+      if (!m || typeof m.type !== 'string') return;
+      if (m.type === 'answer') {
+        clearTimeout(timer);
+        try { ws.close(); } catch { /* noop */ }
+        resolve(m.answer);
+      } else if (m.type === 'error') {
+        clearTimeout(timer);
+        try { ws.close(); } catch { /* noop */ }
+        reject(new Error('signal-error:' + m.code));
+      }
+    };
+    ws.onerror = () => { clearTimeout(timer); reject(new Error('signal-ws-error')); };
+    ws.send(JSON.stringify({ type: 'offer', offer }));
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Version guard + app injection.
+// ---------------------------------------------------------------------------
+
+// Returns true if the binary's protocol version is present AND mismatched.
+// If the field is absent we proceed: older binaries that predate the field are
+// still compatible at v1; the Go side adds `protocolVersion` in a later step.
+async function protocolMismatch() {
+  try {
+    const res = await dcFetch('GET', '/api/version', {});
+    if (res.status >= 400) return false;
+    const info = JSON.parse(utf8FromBase64(res.body) || '{}');
+    return typeof info.protocolVersion === 'number' && info.protocolVersion !== BOOTSTRAP_PROTOCOL_VERSION;
+  } catch {
+    return false;
+  }
+}
+
+// Inject the real index.html into THIS document without navigating. Scripts
+// cloned from innerHTML never execute, so each <script> is recreated via
+// document.createElement; other nodes (links, styles, markup) are imported
+// deep. The importmap lives in <head> before the body's module scripts, so
+// head-then-body order keeps it registered first.
+function injectDocument(html) {
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+
+  // Carry over <html> attributes (e.g. theme/window-mode dataset).
+  for (const attr of Array.from(parsed.documentElement.attributes)) {
+    document.documentElement.setAttribute(attr.name, attr.value);
+  }
+
+  document.head.innerHTML = '';
+  document.body.innerHTML = '';
+  for (const attr of Array.from(parsed.body.attributes)) {
+    document.body.setAttribute(attr.name, attr.value);
+  }
+
+  materializeInto(parsed.head, document.head);
+  materializeInto(parsed.body, document.body);
+}
+
+function materializeInto(srcParent, destParent) {
+  for (const node of Array.from(srcParent.childNodes)) {
+    destParent.appendChild(materialize(node));
+  }
+}
+
+function materialize(node) {
+  if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SCRIPT') {
+    const script = document.createElement('script');
+    for (const attr of Array.from(node.attributes)) {
+      // The injected page has no server CSP nonce; strip it. The Worker serves
+      // this origin with a permissive CSP (script-src 'unsafe-inline'), so
+      // nonce-free inline scripts run.
+      if (attr.name === 'nonce') continue;
+      script.setAttribute(attr.name, attr.value);
+    }
+    // Dynamically-created external scripts default to async=true, so over the DC
+    // tunnel each would execute whenever its fetch happens to resolve. Force
+    // async=false so external scripts run in insertion (document) order — the
+    // classic Prism chain (prism-core defines window.Prism, then markup/css/…
+    // extend it) and the cdnjs diff_match_patch script depend on it. Harmless for
+    // module scripts (deferred-ordered regardless) and inline scripts (no src).
+    if (script.src) script.async = false;
+    script.textContent = node.textContent;
+    return script;
+  }
+  // Links/styles/markup: importNode loads/renders them normally. (index.html
+  // has no <script> nested inside other elements, only as direct children.)
+  return document.importNode(node, true);
+}
+
+// ---------------------------------------------------------------------------
+// Boot.
+// ---------------------------------------------------------------------------
+
+async function boot() {
+  let id;
+  try {
+    // Rendezvous URL is /c/<id>; strip the /c/ prefix to recover the capability.
+    id = location.pathname.replace(/^\/c\//, '').split('/')[0];
+    if (!ID_RE.test(id)) throw new Error('bad-id');
+
+    await ensureServiceWorker();
+
+    const signal = await connectSignal(id);
+    const pc = new RTCPeerConnection({ iceServers: signal.iceServers });
+    const channel = pc.createDataChannel('juggler', { ordered: true });
+    wireDataChannel(channel);
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await waitIceComplete(pc, ICE_GATHER_CAP_MS);
+
+    const answer = await exchangeSdp(signal.ws, pc.localDescription);
+    await pc.setRemoteDescription(answer);
+    await waitDcOpen(channel, DC_OPEN_CAP_MS);
+  } catch (err) {
+    console.error('[juggler.studio] connection failed:', err);
+    if (err && err.message === 'signal-protocol-mismatch') {
+      showState('update');
+    } else {
+      showState('fail');
+    }
+    return;
+  }
+
+  // Connected. From here failures are app/version problems, not connectivity.
+  try {
+    wireServiceWorkerRelay();
+    // Register as the SW's bridging client and AWAIT the ack BEFORE injecting
+    // index.html, so the injected app's SW-routed fetches are all tunneled.
+    await registerBridge();
+
+    // Publish the live transport so the realtime client (step 7) can adopt
+    // this channel instead of opening its own RTCPeerConnection / relay WS.
+    window.__jugglerStudio = {
+      protocolVersion: BOOTSTRAP_PROTOCOL_VERSION,
+      dc,
+      sendFrame,
+      dcFetch,
+        setRealtimeHandler: (fn) => {
+          // Go live first, then drain whatever buffered during the handoff gap.
+          // JS is single-threaded and handleFrame only runs from the channel's
+          // onmessage macrotask, so no frame can arrive mid-call: the splice
+          // captures every buffered frame, the loop replays them in exact
+          // arrival order, and any later frame is delivered live strictly after
+          // — no drop, no reorder, no double-delivery.
+          realtimeHandler = fn;
+          const queued = realtimeBuffer.splice(0, realtimeBuffer.length);
+          for (const raw of queued) fn(raw);
+        },
+    };
+
+    if (await protocolMismatch()) {
+      showState('update');
+      return;
+    }
+
+    const index = await dcFetch('GET', '/index.html', {});
+    if (index.status >= 400) throw new Error('index.html status ' + index.status);
+    injectDocument(utf8FromBase64(index.body));
+  } catch (err) {
+    console.error('[juggler.studio] app load failed:', err);
+    showState('fail');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// base64 <-> utf8 helpers.
+// ---------------------------------------------------------------------------
+
+function utf8FromBase64(b64) {
+  if (!b64) return '';
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+boot();

@@ -7,7 +7,7 @@
 #   ./serve.sh 3000       # serve on a custom port
 set -euo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname/.. "$0")"
 
 PORT="${1:-8000}"
 PAGE="index.html"

@@ -8,7 +8,7 @@ Guidance for AI agents working in this repository.
 (the AI coding workbench), deployed at [juggler.studio](https://juggler.studio).
 It is a small **static site**: plain HTML, CSS, and JavaScript served as files.
 This repo is *not* the Juggler app itself — that lives at
-`github.com/julianstorer/juggler`.
+`github.com/juggler-ai/juggler`.
 
 ## Static site + CSS linting
 
@@ -37,7 +37,6 @@ validation.
 | `styles.css` | Extracted/standalone stylesheet (mirrors the inline styles in `index.html`). |
 | `404.html` | Not-found page; reuses the same theme tokens. |
 | `robots.txt`, `sitemap.xml` | SEO basics pointing at `https://juggler.studio/`. |
-| `main.js` | OS-detection for the download button (progressive enhancement; the button works without it). |
 | `image-slot.js` | `<image-slot>` web component — a user-fillable image placeholder. Carries its own usage docs in a `/* BEGIN USAGE */` block at the top. |
 | `tweaks-panel.jsx` | Reusable "Tweaks" panel + form-control helpers (React, compiled in-browser by Babel). Usage docs in its header comment. |
 | `assets/` | `juggler-logo.svg`, `juggler-wordmark.svg`. |

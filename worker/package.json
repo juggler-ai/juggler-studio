@@ -1,0 +1,13 @@
+{
+  "name": "juggler-version-worker",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "./deploy.sh",
+    "tail": "./tail.sh",
+    "stats": "./stats.sh"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
