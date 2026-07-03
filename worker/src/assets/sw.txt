@@ -1,0 +1,250 @@
+// juggler.studio service worker — client-scoped passthrough + app-namespace tunnel.
+//
+// Scope "/" (served by the Worker with Service-Worker-Allowed: /). The marketing
+// GitHub Pages site shares this origin, so the SW must NOT touch requests it
+// does not own. It tunnels a request over the DataChannel in two cases:
+//   1. The request comes from a registered bridging client (the bootstrap page) —
+//      these are the page's own fetches; tunnel to that page.
+//   2. The request comes from a NON-bridge client (most importantly a
+//      conversation's dedicated engine Web Worker, a separate SW client with its
+//      own clientId that is NOT in bridgeClients) AND its path is in the juggler
+//      binary's served namespace (see isAppNamespace). Those paths are served
+//      exclusively by the binary and never by the Pages marketing site, so
+//      routing them to a bridge page can never intercept a real Pages request.
+// Every other request — Pages navigations, their assets, anything else from a
+// non-bridging client — passes straight through to the network, unintercepted.
+//
+// A bridging client registers by posting {type:'bridge-register'} with a reply
+// port; the SW records its client id in bridgeClients and acks on the port. The
+// bootstrap page awaits that ack before injecting the app, so no injected-asset
+// fetch can race ahead of registration. {type:'bridge-unregister'} removes it.
+
+const REQUEST_TIMEOUT_MS = 30000;
+
+self.addEventListener('install', () => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Client ids that have registered as DataChannel bridges. Insertion order is
+// registration recency: a re-register deletes then re-adds so the last element
+// is always the most-recently-registered bridge (used by pickBridge).
+const bridgeClients = new Set();
+
+// One-shot guard so the multi-session mis-routing warning isn't spammed.
+let multiBridgeWarned = false;
+
+self.addEventListener('message', (event) => {
+  const data = event.data;
+  if (!data || typeof data.type !== 'string') return;
+
+  if (data.type === 'bridge-register') {
+    const id = event.source && event.source.id;
+    if (id) {
+      bridgeClients.delete(id);
+      bridgeClients.add(id);
+    }
+    const port = event.ports && event.ports[0];
+    if (port) port.postMessage({ type: 'bridge-ack', ok: !!id });
+    return;
+  }
+
+  if (data.type === 'bridge-unregister') {
+    const id = event.source && event.source.id;
+    if (id) bridgeClients.delete(id);
+    return;
+  }
+});
+
+// Worker-served resources that must load before the DataChannel exists; never
+// tunneled, even for a bridging client. (The bootstrap page lives under /c/.)
+function isBootstrapResource(pathname) {
+  if (pathname === '/sw.js' || pathname === '/bootstrap.js') return true;
+  if (pathname.startsWith('/c/')) return true;
+  return false;
+}
+
+// Paths served EXCLUSIVELY by the juggler binary and never by the juggler.studio
+// Pages marketing site. This is the disjoint-namespace guarantee that makes it
+// safe to tunnel a non-bridge client's request (e.g. the engine Web Worker's)
+// to a bridge page: a real Pages visitor never requests any of these.
+//   - /v<ver>/...  version-prefixed assets (css, js, sdk, resources, extensions,
+//     js-tests). <ver> is a 4-char base36 cache-busting token. The engine worker
+//     URL is itself version-prefixed (window.__assetPrefix = '/v<ver>'), as are
+//     all its module imports.
+//   - /api/...     every server API, including /api/ops/call and /api/version.
+//   - /worker-module  the module loader the engine worker dynamically imports.
+//   - /wails/...   the Wails runtime shim.
+// Pages serves /main.js, /styles.css, /assets/..., /robots.txt, etc. — none of
+// these prefixes — and the bridge page fetches /index.html itself over the DC,
+// so '/' and '/index.html' (shared with Pages) are deliberately excluded.
+function isAppNamespace(pathname) {
+  if (/^\/v[0-9a-z]+\//.test(pathname)) return true;
+  if (pathname === '/api' || pathname.startsWith('/api/')) return true;
+  if (pathname === '/worker-module') return true;
+  if (pathname.startsWith('/wails/')) return true;
+  return false;
+}
+
+// Choose a bridge page to tunnel a non-bridge (worker) request through.
+// SINGLE-SESSION LIMITATION: a worker request carries the worker's own clientId,
+// not its owning page's, so with more than one studio session in this browser we
+// cannot tell which binary it belongs to and could mis-route (e.g. worker A's
+// /api/ops/call to binary B). We route to the most-recently-registered bridge
+// and warn once. The robust multi-session fix is to tag each spawned engine
+// worker URL with its bridge page id and resolve it via clients.get(cid).url —
+// documented as a follow-up in studio-rendezvous-protocol.md.
+function pickBridge() {
+  if (bridgeClients.size === 0) return null;
+  let last = null;
+  for (const id of bridgeClients) last = id; // insertion order ⇒ last = newest
+  if (bridgeClients.size > 1 && !multiBridgeWarned) {
+    multiBridgeWarned = true;
+    console.warn(
+      '[juggler.studio sw] multiple bridge sessions active in one browser; ' +
+      'routing worker requests to the most recent — concurrent multi-session is unsupported.',
+    );
+  }
+  return last;
+}
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  // Early-outs that hold regardless of which client made the request.
+  // Same-origin only; cross-origin (e.g. cdnjs) stays on the network.
+  if (url.origin !== self.location.origin) return;
+  // Websocket upgrades are never tunneled.
+  if (req.headers.get('upgrade') === 'websocket') return;
+  // The bootstrap shell, sw.js and bootstrap.js are Worker-served.
+  if (isBootstrapResource(url.pathname)) return;
+
+  const cid = event.clientId || event.resultingClientId;
+
+  // Case: the bridge page's own fetches — tunnel to itself.
+  if (cid && bridgeClients.has(cid)) {
+    event.respondWith(tunnel(req, url, cid));
+    return;
+  }
+
+  // Case: a non-bridge client (the engine Web Worker) requesting an app-namespace
+  // path. Route it to a bridge page so its imports / api calls reach the binary
+  // over the DataChannel instead of 404ing against the Pages origin.
+  if (bridgeClients.size > 0 && isAppNamespace(url.pathname)) {
+    const targetBridgeId = pickBridge();
+    if (targetBridgeId) {
+      event.respondWith(tunnel(req, url, targetBridgeId));
+      return;
+    }
+  }
+
+  // Everything else (the Pages site, unknown clients) is left on the network by
+  // returning without calling respondWith.
+});
+
+/**
+ * @param {Request} req
+ * @param {URL} url
+ * @param {string} targetBridgeId  bridge page id to tunnel this request through
+ *   (the requester itself for the bridge page's own fetches, or a chosen bridge
+ *   page for a non-bridge worker request)
+ */
+async function tunnel(req, url, targetBridgeId) {
+  let bodyB64 = '';
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    const buf = await req.arrayBuffer();
+    if (buf.byteLength) bodyB64 = abToBase64(buf);
+  }
+
+  const headers = {};
+  for (const [k, v] of req.headers) headers[k] = v;
+
+  const client = await self.clients.get(targetBridgeId);
+  if (!client) {
+    return new Response('juggler.studio: no bridging page', { status: 503 });
+  }
+
+  const reply = await postToPage(client, {
+    method: req.method,
+    path: url.pathname + url.search,
+    headers,
+    body: bodyB64,
+  });
+
+  const body = reply.body ? base64ToAb(reply.body) : null;
+  return new Response(body, {
+    status: reply.status || 200,
+    headers: new Headers(reply.headers || {}),
+  });
+}
+
+/**
+ * Round-trip a request to the bridging page over a fresh MessageChannel — the
+ * port pair is the correlation, so no shared id/Map bookkeeping is needed. Times
+ * out after REQUEST_TIMEOUT_MS with a synthetic 504 (this timeout applies ONLY
+ * to the tunneled path, never to passthrough) so a hung DataChannel can't wedge
+ * the page forever.
+ * @param {Client} client
+ * @param {{method: string, path: string, headers: object, body: string}} request
+ */
+function postToPage(client, request) {
+  return new Promise((resolve) => {
+    const channel = new MessageChannel();
+    let done = false;
+
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      try { channel.port1.close(); } catch { /* noop */ }
+      resolve({
+        status: 504,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+        body: utf8ToBase64('juggler.studio: tunnel request timed out'),
+      });
+    }, REQUEST_TIMEOUT_MS);
+
+    channel.port1.onmessage = (e) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try { channel.port1.close(); } catch { /* noop */ }
+      resolve(e.data || { status: 502, headers: {}, body: '' });
+    };
+
+    // __juggler_sw_req: the page recognises this and replies on port2.
+    client.postMessage({ type: '__juggler_sw_req', payload: request }, [channel.port2]);
+  });
+}
+
+// --- base64 helpers (no Buffer in a service worker) -------------------------
+
+/** @param {ArrayBuffer} buf */
+function abToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
+}
+
+/** @param {string} b64 */
+function base64ToAb(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+/** @param {string} str */
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}

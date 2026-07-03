@@ -1,0 +1,18 @@
+{
+  "$comment": "TEMPLATE — not a version record. The juggler-version Worker overlays `latest` and `downloads` (url/sha256/size) from the latest GitHub release; ${version} is filled with the release tag. Edit the editorial copy (notice) and per-platform `match` patterns here; never hand-edit version numbers.",
+  "schema": "juggler-version",
+  "schemaVersion": 1,
+  "latest": null,
+  "notice": {
+    "id": "upgrade-${version}",
+    "severity": "recommended",
+    "title": "New Juggler Version Available",
+    "actions": [
+      { "label": "Download", "url": "https://github.com/juggler-ai/juggler/releases/tag/${version}", "primary": true }
+    ]
+  },
+  "downloads": {
+    "darwin/arm64": { "match": "*.dmg" },
+    "windows/amd64": { "match": "*-setup.exe" }
+  }
+}

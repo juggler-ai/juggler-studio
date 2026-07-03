@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Juggler — a visual workbench for AI coding agents</title>
+<meta name="description" content="Juggler is a desktop app for people who want to see and control what their LLM is doing to their codebase: inspectable tool calls, branching threads, and editable context. Runs locally, remotely, or both." />
+<link rel="canonical" href="https://juggler.studio/" />
+
+<!-- Icons -->
+<link rel="icon" href="assets/flat-logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/flat-logo.svg" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Juggler" />
+<meta property="og:title" content="Juggler — a visual workbench for AI coding agents" />
+<meta property="og:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Runs locally, remotely, or both." />
+<meta property="og:url" content="https://juggler.studio/" />
+<meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Juggler — a visual workbench for AI coding agents" />
+<meta name="twitter:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context." />
+<meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <img class="wm" src="assets/juggler-wordmark.svg" alt="Juggler">
+    <div class="topbar-right">
+      <a class="gh-top" href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+        <div class="dl">
+          <a class="dl-btn" data-dl-primary href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v8.5m0 0L4.5 6.5M8 10l3.5-3.5M2.5 13h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="dl-os" data-dl-label="Download for %s">Download</span></a>
+        </div>
+    </div>
+  </div>
+
+  <h1>The code-agent app the world wasn't asking for.</h1>
+  <p class="lede"><span class="q">Yes, folks — it's another AI coding agent.</span></p>
+  <p class="lede">I've been a C++ developer for 30+ years, and the best things I created in that time
+    happened when I got annoyed at some tool I had to use, and decided to write my own version.
+    I ended up with a <a href="https://www.tracktion.com" target="_blank" rel="noopener">DAW</a>, a <a href="https://juce.com" target="_blank" rel="noopener">C++ framework</a>, and a <a href="https://cmajor.dev" target="_blank" rel="noopener">DSP language</a> that way.</p>
+  <p class="lede">Luckily (so far) enough people have shared my taste that those projects found a decent audience.</p>
+  <p class="lede">I had a similar moment with AI agents. It's pretty clear that the rest of my coding
+    career will involve staring at some kind of code-agent tool all day, so I decided to have a stab at making
+    one that feels right to me. I may be arriving at the AI agent party after all the booze has been drunk, but
+    maybe there's still some fun to be had..</p>
+
+  <figure class="section lead-shot">
+    <image-slot id="shot-main" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-main.webp" placeholder="screenshot"></image-slot>
+    <figcaption class="cap">Tool calls, item properties and nested sub-thread are laid out in a Finder-style Miller column view</figcaption>
+  </figure>
+
+  <div class="section">
+    <ul class="points">
+      <li>
+        <h2>It's a real GUI</h2>
+        <p>Using a code agent involves editing big chunks of multi-line text, and getting hosed with information that you need to scan,
+          navigate, and understand. I find a terminal UX horrible for all those tasks, and Juggler is resolutely a GUI app.</p>
+      </li>
+      <li>
+        <h2>The session is a tree, not a doom-scroll</h2>
+        <p>Juggler conversations are documents, not log files. Any point can branch into a sub-thread, recursively.
+          Navigate, drill down, backtrack, duplicate, delete, undo/redo, re-open or branch threads.</p>
+      </li>
+      <li>
+        <h2>Everything important is visible</h2>
+        <p>Tool calls, approvals, thread structure, item properties, even the raw context JSON message — all part of the document.</p>
+      </li>
+      <li>
+        <h2>Everything is an extension</h2>
+        <p>Context items, LLM loop strategies, slash commands, and their UIs are JavaScript plugins you can inspect, fork, or replace.
+          Even the basic tools like read/write/bash etc are plugins that you can swap out.</p>
+      </li>
+      <li>
+        <h2>Runs locally, remotely, or both at once</h2>
+        <p>A juggler session can have any number of simultaneous client views. The native juggler desktop app and browsers
+          connecting locally or remotely all see the same thing. You can run a headless juggler session on a remote machine
+          and still get the same UI you'd have locally.</p>
+      </li>
+      <li>
+        <h2>It supports the usual LLM providers</h2>
+        <p>Claude Code (via CLI or SDK), OpenAI, Gemini, Ollama, OpenRouter, Deepseek, etc.
+          Obviously it's easy to grow this list if people need others.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section two">
+    <figure>
+      <video id="shot-threads" class="shot shot-square" src="assets/screen-recording-threads.mp4" autoplay loop muted playsinline></video>
+      <figcaption class="cap"><b>Branching threads.</b> Sub-threads, all the way down.</figcaption>
+    </figure>
+    <figure>
+      <video id="shot-inspect" class="shot shot-square" src="assets/screen-recording-properties.mp4" autoplay loop muted playsinline></video>
+      <figcaption class="cap"><b>Inspect anything.</b> Properties, history, raw context.</figcaption>
+    </figure>
+  </div>
+
+  <div class="section two">
+    <figure>
+      <image-slot id="shot-extra-1" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-browser.webp" placeholder="screenshot"></image-slot>
+      <figcaption class="cap"><b>A session supports multiple clients.</b> The desktop app and/or browser views are all synced.</figcaption>
+    </figure>
+    <figure>
+      <image-slot id="shot-extra-2" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-extensions.webp" placeholder="screenshot"></image-slot>
+      <figcaption class="cap"><b>Everything's a plugin.</b> All the LLM-facing tools are defined in extensions.</figcaption>
+    </figure>
+  </div>
+
+  <figure class="section screens">
+    <div class="screens-row">
+      <image-slot id="shot-large" class="shot shot-screen-lg" shape="rect" fit="contain" src="assets/screenshot-large.webp" placeholder="screenshot"></image-slot>
+      <image-slot id="shot-mobile" class="shot shot-screen-sm" shape="rect" fit="contain" src="assets/screenshot-mobile.webp" placeholder="screenshot"></image-slot>
+    </div>
+    <figcaption class="cap"><b>Big screen or pocket-sized.</b> The same live session is served, regardless of whether it's the desktop app or a remote browser on your phone.</figcaption>
+  </figure>
+
+  <div class="section">
+    <h2>It's open-source</h2>
+    <p class="lede">My business plan for this project is "release it and see what happens". The extensions API and
+      juggler core extension are Apache-2.0 licensed. The main app itself is AGPLv3. There's no signup needed - it's just an app, so
+      hopefully should be friction-free for the agent-curious to kick the tyres. If there's enough interest, I might add a
+      'pro' version with extra features to fund the project.</p>
+    <p class="lede"><b>This is very much an alpha/beta version at the moment!</b> It's taken me about 6 months of heavy churn
+      to get to this point, and the app will need to do some growing-up out in the real world.</p>
+    <p class="lede">Constructive feedback is welcome - come and say hello on the <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg class="di" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a> -
+      but be gentle! This is not being developed by a huge team at a trillion-dollar AI company, it's a
+      one-man side-hustle, and I have several other jobs :)</p>
+  </div>
+
+  <div class="section get">
+    <div class="card">
+      <p class="k">No terminal required</p>
+      <h2>The desktop app</h2>
+      <p>Download it, drag it to Applications, and double-click. It launches the agent and its local server for you — nothing else to set up.</p>
+    </div>
+    <div class="card">
+      <p class="k">For long-lived &amp; remote sessions</p>
+      <h2>The terminal server</h2>
+      <p>Run the headless <code>juggler</code> binary on the machine where your code lives, then attach from any browser or the desktop app — on your laptop or across the network.</p>
+    </div>
+  </div>
+
+  <div class="downloads">
+    <div class="dl-group" data-dl-app="desktop">
+      <p class="dl-group-label">Download</p>
+      <p class="dl-os-list">
+        <a data-dl-os="darwin" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">macOS</a>
+        <span class="sp">·</span>
+        <a data-dl-os="windows" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Windows</a>
+        <span class="sp">·</span>
+        <a data-dl-os="linux" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Linux</a>
+      </p>
+    </div>
+  </div>
+  <p class="get-note">A single Go binary - no node or electron.</p>
+
+  <div class="foot">
+    <div class="row">
+      <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+      <span class="sp">·</span>
+      <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a>
+      <span class="sp">·</span>
+      <a href="https://www.linkedin.com/in/julian-storer" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.63 0H2.37A2.37 2.37 0 0 0 0 2.37v11.26A2.37 2.37 0 0 0 2.37 16h11.26A2.37 2.37 0 0 0 16 13.63V2.37A2.37 2.37 0 0 0 13.63 0zM4.94 13.01H2.86V6.48h2.08v6.53zM3.9 5.57a1.21 1.21 0 1 1 0-2.42 1.21 1.21 0 0 1 0 2.42zm9.11 7.44h-2.08V9.84c0-.78-.02-1.78-1.08-1.78-1.08 0-1.25.84-1.25 1.72v3.23H6.52V6.48h2v.89h.03c.28-.53.96-1.08 1.97-1.08 2.11 0 2.5 1.39 2.5 3.19v3.53z"></path></svg>Julian Storer</a>
+      <span class="copy-r">© 2026 Julian Storer</span>
+    </div>
+  </div>
+
+</div>
+<script src="image-slot.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>

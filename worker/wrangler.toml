@@ -1,0 +1,67 @@
+name = "juggler-version"
+main = "src/worker.js"
+compatibility_date = "2025-06-01"
+
+# Also expose a *.workers.dev URL so the Worker can be tested directly,
+# independent of the juggler.studio zone/route. Safe to leave on.
+workers_dev = true
+# Match the remote setting so `wrangler deploy` doesn't warn about a config drift.
+preview_urls = true
+
+# Intercept ONLY the version endpoint; the rest of the site stays on GitHub Pages.
+# The trailing `*` is REQUIRED: Cloudflare matches route patterns against the
+# full URL including the query string, so a pattern without a wildcard would
+# never match the app's real requests (which always carry ?v=&os=&arch=).
+routes = [
+  { pattern = "juggler.studio/juggler-version.json*", zone_name = "juggler.studio" },
+  { pattern = "juggler.studio/c/*", zone_name = "juggler.studio" },
+  { pattern = "juggler.studio/sw.js", zone_name = "juggler.studio" },
+  { pattern = "juggler.studio/bootstrap.js", zone_name = "juggler.studio" }
+]
+
+# Structured request logging you can query later via the Analytics Engine SQL API.
+[[analytics_engine_datasets]]
+binding = "VERSION_CHECKS"
+dataset = "juggler_version_checks"
+
+[vars]
+# Editorial template (schema, notice copy, per-platform asset `match` patterns).
+# Read straight from the repo via raw.githubusercontent.com — NOT the Pages URL:
+# because juggler.studio has a custom domain, the *.github.io Pages URL 301s
+# back to juggler.studio/juggler-version.json, which would re-enter this
+# Worker's route and recurse. raw.githubusercontent.com bypasses Pages entirely.
+TEMPLATE_URL = "https://raw.githubusercontent.com/juggler-ai/juggler-studio/main/juggler-version.json"
+
+# Source of truth for the version itself: the latest published release here.
+SOURCE_REPO = "juggler-ai/juggler"
+
+# Rendezvous-owned ICE config. juggler.studio is STUN-only by design — it never
+# runs a public relay, so this single STUN server is the entire ICE config sent
+# to both peers in the protocol-v2 config frame.
+STUN_URL = "stun:stun.l.google.com:19302"
+
+# GITHUB_TOKEN (contents:read on SOURCE_REPO) is NOT set here — it's a secret.
+# Set it once with:  npx wrangler secret put GITHUB_TOKEN
+
+
+# --- WebRTC rendezvous additions (additive; everything above is unchanged) ---
+
+# Signaling mailbox: one SQLite-backed Durable Object instance per <id> relays a
+# single SDP offer + answer between host and guest, then idles.
+[[durable_objects.bindings]]
+name = "SIGNAL_ROOM"
+class_name = "SignalRoom"
+
+# First migration for this Worker (no prior migrations existed). SQLite-backed DO
+# class; auto-applied on `wrangler deploy`.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SignalRoom"]
+
+# Import the three bootstrap assets as text modules. Scoped to src/assets/* ONLY,
+# so src/worker.js and src/signal-room.js stay ESM. The asset JS files use a
+# neutral .txt extension so this rule never collides with the default .js ESM rule.
+[[rules]]
+type = "Text"
+globs = ["**/src/assets/*"]
+fallthrough = true
