@@ -180,18 +180,34 @@ function resolveVersion(template, release) {
   if (!version) throw new Error("release missing tag_name");
 
   const assets = release.assets || [];
-  const downloads = {};
-  for (const [platform, spec] of Object.entries(template.downloads || {})) {
+
+  const resolveAsset = (spec) => {
     const asset = assets.find((a) => matchGlob(spec.match, a.name));
-    if (!asset) {
-      throw new Error(`no asset matching "${spec.match}" for ${platform}`);
-    }
-    downloads[platform] = {
+    if (!asset) return null;
+    return {
       url: asset.browser_download_url,
       // GitHub exposes the digest as "sha256:<hex>"; the payload wants bare hex.
       sha256: String(asset.digest || "").replace(/^sha256:/, ""),
       size: asset.size,
     };
+  };
+
+  // downloads = the human installers the website links. A missing asset is
+  // fatal: the website must not advertise a version with no download.
+  const downloads = {};
+  for (const [platform, spec] of Object.entries(template.downloads || {})) {
+    const resolved = resolveAsset(spec);
+    if (!resolved) throw new Error(`no asset matching "${spec.match}" for ${platform}`);
+    downloads[platform] = resolved;
+  }
+
+  // update = the swap-installable archive the in-app updater downloads. LENIENT:
+  // a release without the enclosure just omits the entry (the app then offers no
+  // auto-update), rather than failing the whole manifest for the website.
+  const update = {};
+  for (const [platform, spec] of Object.entries(template.update || {})) {
+    const resolved = resolveAsset(spec);
+    if (resolved) update[platform] = resolved;
   }
 
   // Carry the editorial fields through (schema/schemaVersion/notice), but drop
@@ -201,9 +217,9 @@ function resolveVersion(template, release) {
     if (!k.startsWith("$")) carried[k] = v;
   }
 
-  // latest + downloads are overlaid; then interpolate ${version} through the
-  // editorial strings (notice id/urls).
-  return interpolate({ ...carried, latest: version, downloads }, version);
+  // latest + downloads + update are overlaid (overwriting the template's raw
+  // `match` specs); then interpolate ${version} through the editorial strings.
+  return interpolate({ ...carried, latest: version, downloads, update }, version);
 }
 
 // Tiny glob: only `*` is special (matches any run of characters).

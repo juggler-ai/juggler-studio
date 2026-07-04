@@ -1,5 +1,5 @@
 {
-  "$comment": "TEMPLATE — not a version record. The juggler-version Worker overlays `latest` and `downloads` (url/sha256/size) from the latest GitHub release; ${version} is filled with the release tag. Edit the editorial copy (notice) and per-platform `match` patterns here; never hand-edit version numbers.",
+  "$comment": "TEMPLATE — not a version record. The juggler-version Worker overlays `latest` plus the `downloads` and `update` blocks (url/sha256/size) from the latest GitHub release; ${version} is filled with the release tag. `downloads` = the human installers the website links; `update` = the swap-installable archive the desktop app's in-app updater downloads. Edit the editorial copy (notice) and per-platform `match` patterns here; never hand-edit version numbers.",
   "schema": "juggler-version",
   "schemaVersion": 1,
   "latest": null,
@@ -14,5 +14,8 @@
   "downloads": {
     "darwin/arm64": { "match": "*.dmg" },
     "windows/amd64": { "match": "*-setup.exe" }
+  },
+  "update": {
+    "darwin/arm64": { "match": "Juggler-*.zip" }
   }
 }
