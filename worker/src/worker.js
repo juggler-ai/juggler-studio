@@ -154,15 +154,13 @@ async function fetchTemplate(env) {
 }
 
 // The source of truth for the version itself: the latest published release of
-// the (private) app repo. Needs a GitHub token with contents:read, stored as a
-// Worker secret (`wrangler secret put GITHUB_TOKEN`). `releases/latest` already
-// excludes drafts and prereleases.
+// the app repo. SOURCE_REPO is public, so the releases API is read
+// unauthenticated. `releases/latest` already excludes drafts and prereleases.
 async function fetchLatestRelease(env) {
   const res = await fetch(
     `https://api.github.com/repos/${env.SOURCE_REPO}/releases/latest`,
     {
       headers: {
-        authorization: `Bearer ${env.GITHUB_TOKEN}`,
         accept: "application/vnd.github+json",
         "user-agent": "juggler-version-worker",
         "x-github-api-version": "2022-11-28",

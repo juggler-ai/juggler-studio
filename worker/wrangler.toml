@@ -40,9 +40,6 @@ SOURCE_REPO = "juggler-ai/juggler"
 # to both peers in the protocol-v2 config frame.
 STUN_URL = "stun:stun.l.google.com:19302"
 
-# GITHUB_TOKEN (contents:read on SOURCE_REPO) is NOT set here — it's a secret.
-# Set it once with:  npx wrangler secret put GITHUB_TOKEN
-
 
 # --- WebRTC rendezvous additions (additive; everything above is unchanged) ---
 

@@ -45,19 +45,12 @@ First-time setup:
 
 ```sh
 cd worker
-npm install                         # installs wrangler (dev dependency)
-npx wrangler login                  # one-time browser auth
-npx wrangler secret put GITHUB_TOKEN # paste a token with contents:read on SOURCE_REPO
-./deploy.sh                         # publishes the Worker + route
+npm install            # installs wrangler (dev dependency)
+npx wrangler login     # one-time browser auth
+./deploy.sh            # publishes the Worker + route
 ```
 
-> **The `GITHUB_TOKEN` is temporary.** It exists only because `SOURCE_REPO`
-> (`juggler-ai/juggler`) is currently private, so the releases API needs auth.
-> Once that repo is public, the token and all the secret-management faff can be
-> removed entirely: delete the `GITHUB_TOKEN` secret (`npx wrangler secret
-> delete GITHUB_TOKEN`), drop the `authorization` header from
-> `fetchLatestRelease` in `src/worker.js`, and redeploy. The public releases
-> API works unauthenticated. Nothing else changes.
+`SOURCE_REPO` (`juggler-ai/juggler`) is public, the Worker reads the releases API from it.
 
 ## Stats
 
@@ -90,9 +83,6 @@ npx wrangler dev       # run the Worker locally
 - The template (`juggler-version.json` at the repo root) is **not** a version
   record — it holds only editorial copy and per-platform asset `match` globs.
   Never hand-edit version numbers; cut a GitHub release instead.
-- `GITHUB_TOKEN` is a Worker secret (not in `wrangler.toml`). It needs
-  `contents:read` on `SOURCE_REPO` because that repo is private. Rotate with
-  `npx wrangler secret put GITHUB_TOKEN`.
 - Responses are sent with `cache-control: no-store` so every check reaches the
   Worker and gets logged; the template and release fetches are edge-cached ~60s,
   which also keeps GitHub API usage well under the rate limit.
