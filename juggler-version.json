@@ -16,6 +16,7 @@
     "windows/amd64": { "match": "*-setup.exe" }
   },
   "update": {
-    "darwin/arm64": { "match": "Juggler-*.zip" }
+    "darwin/arm64": { "match": "Juggler-*.zip" },
+    "windows/amd64": { "match": "juggler-*-windows-amd64.zip" }
   }
 }
