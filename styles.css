@@ -152,7 +152,10 @@ video.shot{object-fit:contain;}
 @media (max-width:40rem){
   .page{padding:4rem 1.375rem 5rem;}
   .wm{height:4rem;}
-  .topbar{margin-bottom:3.5rem;}
+  /* Let the header wrap instead of forcing horizontal overflow: on narrow
+     phones the wordmark + auto-detected "Download for macOS" button can't
+     share one row, so the right-hand group drops to its own line. */
+  .topbar{margin-bottom:3.5rem;flex-wrap:wrap;}
   h1{font-size:1.9375rem;}
   .lede{font-size:1rem;}
   .lede a .di{width:1rem;height:1rem;vertical-align:-.15rem;margin-right:.25rem;}
