@@ -18,6 +18,15 @@
 // port; the SW records its client id in bridgeClients and acks on the port. The
 // bootstrap page awaits that ack before injecting the app, so no injected-asset
 // fetch can race ahead of registration. {type:'bridge-unregister'} removes it.
+//
+// bridgeClients is in-memory only, so an idle SW termination wipes it — and
+// lifecycle events don't re-fire on the respawn, so nothing re-registers (this
+// is why sessions used to break ~a minute in on Firefox, which evicts idle SWs
+// aggressively: every tunneled request then fell through to the Pages origin and
+// 404'd). Explicit registration is therefore a fast path, not the source of
+// truth: for app-namespace requests the fetch handler re-derives bridges from
+// the controlled /c/ clients (recoverBridges) so tunneling self-heals after a
+// respawn without needing the page to re-register.
 
 const REQUEST_TIMEOUT_MS = 30000;
 
@@ -142,9 +151,56 @@ self.addEventListener('fetch', (event) => {
     }
   }
 
+  // Recovery: bridgeClients is in-memory and is wiped whenever this SW is
+  // terminated for idle and respawned. A live bridge page is still controlled by
+  // the SW, though, so for app-namespace paths — which are disjoint from the
+  // Pages site and thus always safe to claim — re-derive the bridge from the
+  // controlled /c/ clients before giving up. Restricting recovery to
+  // app-namespace paths keeps Pages navigations/assets untouched. Without this,
+  // every /api/... and /v<ver>/... request after an eviction falls through to
+  // the Pages origin and 404s until a full reload.
+  if (isAppNamespace(url.pathname)) {
+    event.respondWith(recoverAndTunnel(req, url, cid));
+    return;
+  }
+
   // Everything else (the Pages site, unknown clients) is left on the network by
   // returning without calling respondWith.
 });
+
+// Re-populate bridgeClients from the SW's currently-controlled window clients by
+// treating every /c/<id> page as a bridge. That URL is stable across the app
+// injection's document.open()/write(), so it reliably identifies a bridge page
+// even after the in-memory set was lost. delete-then-add preserves the
+// insertion-order = recency invariant pickBridge relies on. Cheap and idempotent.
+async function recoverBridges() {
+  let windows;
+  try {
+    windows = await self.clients.matchAll({ type: 'window' });
+  } catch {
+    return;
+  }
+  for (const c of windows) {
+    let pathname;
+    try { pathname = new URL(c.url).pathname; } catch { continue; }
+    if (pathname.startsWith('/c/')) {
+      bridgeClients.delete(c.id);
+      bridgeClients.add(c.id);
+    }
+  }
+}
+
+// Tunnel an app-namespace request after rebuilding the bridge set. Prefers the
+// requester itself when it turns out to be a bridge page (its own fetch); else
+// routes to a chosen bridge. If no bridge page is alive at all there is nothing
+// to tunnel through, so fall back to the network — an honest 404 for a session
+// that is genuinely gone, rather than a hang.
+async function recoverAndTunnel(req, url, cid) {
+  await recoverBridges();
+  const target = cid && bridgeClients.has(cid) ? cid : pickBridge();
+  if (!target) return fetch(req);
+  return tunnel(req, url, target);
+}
 
 /**
  * @param {Request} req

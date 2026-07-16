@@ -115,12 +115,25 @@ export class SignalRoom {
   }
 
   /**
-   * Either socket closing kills the half-open handshake: close the peer and
-   * reset so the id can be claimed again.
+   * Host death kills any connected guest (its half-open handshake can never
+   * complete, and the id becomes claimable again). Guest death is deliberately
+   * NOT symmetric: a guest closes its socket after every COMPLETED exchange
+   * (bootstrap's exchangeSdp closes as soon as the answer arrives), so kicking
+   * the host here would bounce the host's long-lived signaling socket through
+   * its reconnect backoff on every guest page load. The host socket is built
+   * to serve repeated offers (a guest reload just sends a fresh one), so leave
+   * it alone and only drop the guest slot plus any offer it left buffered.
    * @param {'host' | 'guest'} role
    * @param {WebSocket} ws
    */
   onClose(role, ws) {
+    // Complete the close handshake from our side: workerd does not auto-echo a
+    // client-initiated close, and a never-acknowledged close leaves the
+    // client's socket stuck in CLOSING — Firefox then finalizes it at the next
+    // page-load transition (the bootstrap's document.open() injection) with a
+    // noisy "connection ... was interrupted while the page was loading"
+    // console warning. No-op if the socket is already fully closed.
+    safeClose(ws, 1000, 'bye');
     if (role === 'host' && this.host === ws) {
       this.host = null;
       this.pendingOffer = null;
@@ -130,10 +143,9 @@ export class SignalRoom {
       }
     } else if (role === 'guest' && this.guest === ws) {
       this.guest = null;
-      if (this.host) {
-        safeClose(this.host, 1001, 'guest-gone');
-        this.host = null;
-      }
+      // Any offer this guest left buffered is stale — if a host connected
+      // later it would build an answer (and a peer connection) for nobody.
+      this.pendingOffer = null;
     }
   }
 }

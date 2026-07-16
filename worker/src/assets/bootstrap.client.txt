@@ -53,6 +53,14 @@ if (retryBtn) retryBtn.addEventListener('click', () => location.reload());
 // ---------------------------------------------------------------------------
 
 let dc = null;
+// Strong reference to the live RTCPeerConnection. Without it Firefox's GC/CC
+// collects a connected-but-unreferenced peer connection and fires `close` on
+// its DataChannel a few seconds after boot() returns (w3c/webrtc-pc#2624,
+// Bugzilla 1805317) — the guest link then flaps forever. Chrome/Safari keep a
+// connected pc alive internally, which is why only Firefox showed it. Also
+// published on window.__jugglerStudio so it stays rooted from the window after
+// injectDocument()'s document.open().
+let pc = null;
 let dcChunkSeq = 0;
 const incomingChunks = new Map(); // id -> { total, parts, received }
 const pendingHttp = new Map(); // reqid -> { resolve, reject, timer }
@@ -218,6 +226,58 @@ async function ensureServiceWorker() {
   });
 }
 
+// The public SDK specifier -> facade-path map. MUST mirror the import map in
+// web/index.html (and workerSDKImports in cmd/juggler/server/worker_module.go).
+// Over the P2P tunnel the viewer document cannot use an import map (see
+// injectDocument), so — exactly as the binary already does server-side for the
+// engine worker — we rewrite these bare specifiers to concrete URLs in each JS
+// module as it arrives. Targets are version-RELATIVE: the "/v<ver>/" prefix is
+// taken from the requested module's own path, so a rewritten URL is byte-
+// identical to the one index.html loads directly (same ES-module identity, no
+// double-loaded singletons). Keep this table in sync with the core import map.
+const SDK_SPECIFIERS = {
+  'juggler/context-item': 'sdk/context-item.js',
+  'juggler/strategy-type': 'sdk/strategy-type.js',
+  'juggler/command-type': 'sdk/command-type.js',
+  'juggler/ops': 'sdk/ops.js',
+  'juggler/sandbox': 'sdk/sandbox.js',
+  'juggler/ui': 'sdk/ui.js',
+  'juggler/model': 'sdk/model.js',
+  'juggler/item-utils': 'sdk/item-utils.js',
+  'juggler/registry': 'sdk/registry.js',
+  'juggler/version': 'sdk/version.js',
+  'juggler/utils/html': 'sdk/lib/html.js',
+};
+
+// Matches static import/export and dynamic import() specifiers. Ported verbatim
+// from workerModuleImportRe in cmd/juggler/server/worker_module.go.
+const SDK_IMPORT_RE = /(\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?|\bimport\s*\(\s*)(['"])([^'"]+)(['"])/g;
+
+// Rewrite the bare juggler/* specifiers in one JS module's source. versionPrefix
+// is the module's own "/v<ver>/" (or "/" when the path carries no version).
+function rewriteSdkImports(source, versionPrefix) {
+  return source.replace(SDK_IMPORT_RE, (match, pre, q1, spec, q2) => {
+    const mapped = SDK_SPECIFIERS[spec];
+    return mapped ? pre + q1 + versionPrefix + mapped + q2 : match;
+  });
+}
+
+// Post-process a tunneled response: resolve the bare juggler/* specifiers in JS
+// module bodies. Non-JS bodies and error responses pass through untouched. This
+// is what lets the injected viewer boot without an import map (which Firefox
+// refuses to honor in this already-loaded document).
+function rewriteModuleResponse(path, res) {
+  if (!res || res.status >= 400 || !res.body) return res;
+  const ctype = (res.headers && (res.headers['content-type'] || res.headers['Content-Type'])) || '';
+  if (!/\.m?js($|\?)/.test(path) && !/javascript/i.test(ctype)) return res;
+  const vm = /^\/v([0-9a-z]+)\//.exec(path);
+  const versionPrefix = vm ? `/v${vm[1]}/` : '/';
+  const src = utf8FromBase64(res.body);
+  const out = rewriteSdkImports(src, versionPrefix);
+  if (out === src) return res;
+  return { status: res.status, headers: res.headers, body: utf8ToBase64(out) };
+}
+
 function wireServiceWorkerRelay() {
   navigator.serviceWorker.addEventListener('message', (e) => {
     const msg = e.data;
@@ -226,7 +286,7 @@ function wireServiceWorkerRelay() {
     if (!port) return;
     const r = msg.payload;
     dcFetch(r.method, r.path, r.headers, r.body)
-      .then((res) => port.postMessage(res))
+      .then((res) => port.postMessage(rewriteModuleResponse(r.path, res)))
       .catch(() => port.postMessage({
         status: 504,
         headers: { 'content-type': 'text/plain; charset=utf-8' },
@@ -369,58 +429,28 @@ async function protocolMismatch() {
   }
 }
 
-// Inject the real index.html into THIS document without navigating. Scripts
-// cloned from innerHTML never execute, so each <script> is recreated via
-// document.createElement; other nodes (links, styles, markup) are imported
-// deep. The importmap lives in <head> before the body's module scripts, so
-// head-then-body order keeps it registered first.
+// Load the real index.html into THIS document via document.open()/write().
+// This does NOT navigate and does NOT tear down the tunnel: document.open()
+// only replaces the DOM, while the Window and its globals (window.__jugglerStudio
+// and the closure-held RTCDataChannel above), the navigator.serviceWorker
+// registration + bridge relay, and this page's SW client id all live at
+// realm/navigator level, so they survive. The written page's module scripts then
+// fetch /v<ver>/... over the SW tunnel and its classic scripts (Prism chain,
+// cdnjs diff_match_patch) run in document order — a normal parse handles both.
+//
+// The app's bare `juggler/*` SDK specifiers are NOT resolved by its import map
+// here: Firefox permanently refuses to honor an import map in a document that
+// has already loaded (this bootstrap page), and a document.open() fresh parse
+// does NOT clear that refusal in Firefox (Chrome does; Firefox does not). So we
+// strip the now-inert <script type="importmap"> — otherwise it just logs a
+// confusing "import maps are not allowed after a module load or preload has
+// started" warning — and instead resolve every juggler/* specifier to a concrete
+// URL as each module streams in over the tunnel (see rewriteModuleResponse).
 function injectDocument(html) {
-  const parsed = new DOMParser().parseFromString(html, 'text/html');
-
-  // Carry over <html> attributes (e.g. theme/window-mode dataset).
-  for (const attr of Array.from(parsed.documentElement.attributes)) {
-    document.documentElement.setAttribute(attr.name, attr.value);
-  }
-
-  document.head.innerHTML = '';
-  document.body.innerHTML = '';
-  for (const attr of Array.from(parsed.body.attributes)) {
-    document.body.setAttribute(attr.name, attr.value);
-  }
-
-  materializeInto(parsed.head, document.head);
-  materializeInto(parsed.body, document.body);
-}
-
-function materializeInto(srcParent, destParent) {
-  for (const node of Array.from(srcParent.childNodes)) {
-    destParent.appendChild(materialize(node));
-  }
-}
-
-function materialize(node) {
-  if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SCRIPT') {
-    const script = document.createElement('script');
-    for (const attr of Array.from(node.attributes)) {
-      // The injected page has no server CSP nonce; strip it. The Worker serves
-      // this origin with a permissive CSP (script-src 'unsafe-inline'), so
-      // nonce-free inline scripts run.
-      if (attr.name === 'nonce') continue;
-      script.setAttribute(attr.name, attr.value);
-    }
-    // Dynamically-created external scripts default to async=true, so over the DC
-    // tunnel each would execute whenever its fetch happens to resolve. Force
-    // async=false so external scripts run in insertion (document) order — the
-    // classic Prism chain (prism-core defines window.Prism, then markup/css/…
-    // extend it) and the cdnjs diff_match_patch script depend on it. Harmless for
-    // module scripts (deferred-ordered regardless) and inline scripts (no src).
-    if (script.src) script.async = false;
-    script.textContent = node.textContent;
-    return script;
-  }
-  // Links/styles/markup: importNode loads/renders them normally. (index.html
-  // has no <script> nested inside other elements, only as direct children.)
-  return document.importNode(node, true);
+  html = html.replace(/<script\b[^>]*\btype=["']importmap["'][\s\S]*?<\/script>/i, '');
+  document.open();
+  document.write(html);
+  document.close();
 }
 
 // ---------------------------------------------------------------------------
@@ -437,7 +467,7 @@ async function boot() {
     await ensureServiceWorker();
 
     const signal = await connectSignal(id);
-    const pc = new RTCPeerConnection({ iceServers: signal.iceServers });
+    pc = new RTCPeerConnection({ iceServers: signal.iceServers });
     const channel = pc.createDataChannel('juggler', { ordered: true });
     wireDataChannel(channel);
 
@@ -467,9 +497,12 @@ async function boot() {
 
     // Publish the live transport so the realtime client (step 7) can adopt
     // this channel instead of opening its own RTCPeerConnection / relay WS.
-    window.__jugglerStudio = {
-      protocolVersion: BOOTSTRAP_PROTOCOL_VERSION,
-      dc,
+      window.__jugglerStudio = {
+        protocolVersion: BOOTSTRAP_PROTOCOL_VERSION,
+        // pc must stay reachable for the tunnel's lifetime — see the `let pc`
+        // comment (Firefox GCs an unreferenced live RTCPeerConnection).
+        pc,
+        dc,
       sendFrame,
       dcFetch,
         setRealtimeHandler: (fn) => {
