@@ -109,6 +109,13 @@ a `/c/...` request with a bad id is 404 (never falls through to Pages).
   then relays a single SDP offer + answer between the host (local binary, dials
   out) and the guest (remote browser), then idles. Its `v1` migration is declared
   in `wrangler.toml` and **auto-applies on `wrangler deploy`** — no manual step.
+  Sockets are accepted via the **WebSocket Hibernation API**
+  (`state.acceptWebSocket`), so an idle room — the steady state, since a host
+  holds a long-lived signaling socket that stays silent between guest offers — is
+  evicted from memory and stops billing Durable Object **duration** until the next
+  frame arrives. Peer state therefore lives in hibernation-safe places, never
+  instance fields: peers via `getWebSockets(role)`, the socket's role via
+  `getTags(ws)`, and a guest's early offer in `state.storage`.
 - **Client-scoped passthrough SW.** Because the Pages site shares this origin,
   `sw.js` tunnels a request over the DataChannel **only** when it comes from a
   registered bridging client (the bootstrap page registers via `bridge-register`

@@ -4,13 +4,20 @@
 // dumb mailbox: it never parses SDP, it relays frames verbatim (see the protocol
 // contract "Signaling messages" / "DO behaviour").
 //
-// One instance per <id> (worker.js uses idFromName(<id>)). Plain in-memory
-// socket pair — no hibernation; if the instance evicts, the half-open handshake
-// is dead anyway and the guest just retries with a fresh id.
+// One instance per <id> (worker.js uses idFromName(<id>)). Sockets are accepted
+// via the WebSocket Hibernation API (state.acceptWebSocket), so an idle room —
+// which is its steady state, a host holding a long-lived signaling socket that
+// stays silent between guest offers — is evicted from memory and stops billing
+// Durable Object duration until the next frame arrives. Because hibernation
+// discards instance memory, NO peer state lives in instance fields: peers are
+// recovered from state.getWebSockets(role), the socket's role from
+// state.getTags(ws), and a guest's early offer from state.storage so it survives
+// an eviction between guest-connect and host-connect.
 
 const OPEN = 1; // WebSocket.readyState OPEN
 const RENDEZVOUS_PROTOCOL_VERSION = 2;
 const DEFAULT_STUN_URL = 'stun:stun.l.google.com:19302';
+const PENDING_OFFER_KEY = 'pendingOffer';
 
 export class SignalRoom {
   /**
@@ -20,14 +27,6 @@ export class SignalRoom {
   constructor(state, env) {
     this.state = state;
     this.env = env;
-    /** @type {WebSocket | null} */
-    this.host = null;
-    /** @type {WebSocket | null} */
-    this.guest = null;
-    // A guest may send its offer before the host has connected; buffer the raw
-    // frame and flush it on host connect.
-    /** @type {string | null} */
-    this.pendingOffer = null;
   }
 
   /** @param {Request} request */
@@ -43,48 +42,44 @@ export class SignalRoom {
     const pair = new WebSocketPair();
     const client = pair[0];
     const server = pair[1];
-    server.accept();
-    this.attach(role, server, iceConfigFromEnv(this.env));
+
+    // Exactly one host per id. A second live host claim is rejected on an
+    // ephemeral (non-hibernatable) socket that we close immediately, so it is
+    // never tagged 'host' and never counts as the room's host.
+    if (role === 'host' && this.openHost()) {
+      server.accept();
+      safeSend(server, { type: 'error', code: 'host-taken', message: 'this id already has a host' });
+      safeClose(server, 1008, 'host-taken');
+      return new Response(null, { status: 101, webSocket: client });
+    }
+
+    // Hibernatable accept: the room can evict from memory while this socket stays
+    // open, and only wakes (and bills) when a frame actually arrives.
+    this.state.acceptWebSocket(server, [role]);
+
+    safeSend(server, iceConfigFromEnv(this.env));
+    if (role === 'host') {
+      // A guest may have sent its offer before the host connected; flush it.
+      const pendingOffer = await this.state.storage.get(PENDING_OFFER_KEY);
+      if (pendingOffer) {
+        safeSendRaw(server, pendingOffer);
+        await this.state.storage.delete(PENDING_OFFER_KEY);
+      }
+    }
 
     return new Response(null, { status: 101, webSocket: client });
   }
 
   /**
-   * @param {'host' | 'guest'} role
+   * Hibernation delivers frames here instead of an 'message' listener. The
+   * socket's role is recovered from its tag, and the peer from getWebSockets —
+   * neither survives eviction as an instance field.
    * @param {WebSocket} ws
-   * @param {object} iceConfig
+   * @param {string | ArrayBuffer} message
    */
-  attach(role, ws, iceConfig) {
-    if (role === 'host') {
-      // Exactly one host per id. A second live host claim is rejected.
-      if (this.host && this.host.readyState === OPEN) {
-        safeSend(ws, { type: 'error', code: 'host-taken', message: 'this id already has a host' });
-        safeClose(ws, 1008, 'host-taken');
-        return;
-      }
-      this.host = ws;
-    } else {
-      this.guest = ws;
-    }
-
-    safeSend(ws, iceConfig);
-    if (role === 'host' && this.pendingOffer) {
-      safeSendRaw(ws, this.pendingOffer);
-      this.pendingOffer = null;
-    }
-
-    ws.addEventListener('message', (evt) => this.onMessage(role, ws, evt));
-    ws.addEventListener('close', () => this.onClose(role, ws));
-    ws.addEventListener('error', () => this.onClose(role, ws));
-  }
-
-  /**
-   * @param {'host' | 'guest'} role
-   * @param {WebSocket} ws
-   * @param {MessageEvent} evt
-   */
-  onMessage(role, ws, evt) {
-    const raw = typeof evt.data === 'string' ? evt.data : null;
+  async webSocketMessage(ws, message) {
+    const role = this.state.getTags(ws)[0];
+    const raw = typeof message === 'string' ? message : null;
     if (raw === null) return; // never relay binary on the signaling channel
     let frame;
     try {
@@ -95,23 +90,43 @@ export class SignalRoom {
     if (!frame || typeof frame.type !== 'string') return;
 
     if (role === 'guest' && frame.type === 'offer') {
-      if (this.host && this.host.readyState === OPEN) {
-        safeSendRaw(this.host, raw);
+      const host = this.openHost();
+      if (host) {
+        safeSendRaw(host, raw);
       } else {
-        this.pendingOffer = raw; // deliver on host connect
+        await this.state.storage.put(PENDING_OFFER_KEY, raw); // deliver on host connect
       }
       return;
     }
 
     if (role === 'host' && frame.type === 'answer') {
-      if (this.guest && this.guest.readyState === OPEN) {
-        safeSendRaw(this.guest, raw);
+      const guest = this.openGuest();
+      if (guest) {
+        safeSendRaw(guest, raw);
       }
       return;
     }
 
     // Only the protocol frames above are accepted. The DO owns ICE config, so
     // clients may not override it; there is no candidate relay (non-trickle ICE).
+  }
+
+  /**
+   * @param {WebSocket} ws
+   * @param {number} code
+   * @param {string} reason
+   * @param {boolean} wasClean
+   */
+  async webSocketClose(ws, code, reason, wasClean) {
+    await this.onDisconnect(ws);
+  }
+
+  /**
+   * @param {WebSocket} ws
+   * @param {unknown} error
+   */
+  async webSocketError(ws, error) {
+    await this.onDisconnect(ws);
   }
 
   /**
@@ -122,11 +137,11 @@ export class SignalRoom {
    * the host here would bounce the host's long-lived signaling socket through
    * its reconnect backoff on every guest page load. The host socket is built
    * to serve repeated offers (a guest reload just sends a fresh one), so leave
-   * it alone and only drop the guest slot plus any offer it left buffered.
-   * @param {'host' | 'guest'} role
+   * it alone and only drop any offer the guest left buffered.
    * @param {WebSocket} ws
    */
-  onClose(role, ws) {
+  async onDisconnect(ws) {
+    const role = this.state.getTags(ws)[0];
     // Complete the close handshake from our side: workerd does not auto-echo a
     // client-initiated close, and a never-acknowledged close leaves the
     // client's socket stuck in CLOSING — Firefox then finalizes it at the next
@@ -134,19 +149,27 @@ export class SignalRoom {
     // noisy "connection ... was interrupted while the page was loading"
     // console warning. No-op if the socket is already fully closed.
     safeClose(ws, 1000, 'bye');
-    if (role === 'host' && this.host === ws) {
-      this.host = null;
-      this.pendingOffer = null;
-      if (this.guest) {
-        safeClose(this.guest, 1001, 'host-gone');
-        this.guest = null;
+    if (role === 'host') {
+      await this.state.storage.delete(PENDING_OFFER_KEY);
+      // The host is gone; any guest's half-open handshake can never complete.
+      for (const guest of this.state.getWebSockets('guest')) {
+        safeClose(guest, 1001, 'host-gone');
       }
-    } else if (role === 'guest' && this.guest === ws) {
-      this.guest = null;
+    } else if (role === 'guest') {
       // Any offer this guest left buffered is stale — if a host connected
       // later it would build an answer (and a peer connection) for nobody.
-      this.pendingOffer = null;
+      await this.state.storage.delete(PENDING_OFFER_KEY);
     }
+  }
+
+  /** @returns {WebSocket | undefined} the live host socket, if any */
+  openHost() {
+    return this.state.getWebSockets('host').find((ws) => ws.readyState === OPEN);
+  }
+
+  /** @returns {WebSocket | undefined} the live guest socket, if any */
+  openGuest() {
+    return this.state.getWebSockets('guest').find((ws) => ws.readyState === OPEN);
   }
 }
 
