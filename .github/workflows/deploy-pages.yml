@@ -1,0 +1,54 @@
+name: Deploy static site to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; let in-progress production deploys finish
+# rather than cancelling them (cancelling wedges the Pages environment and the
+# next run fails with "Deployment failed, try again later").
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+      # Pages serves exactly what gets uploaded, so upload only the site.
+      # Uploading the checkout wholesale also published the repo's tooling —
+      # worker/, scripts/, AGENTS.md, package.json were all reachable under
+      # https://juggler.studio/. This list is the site, and nothing else.
+      #
+      # ADD NEW SITE FILES HERE or they will 404 in production.
+      # scripts/validate-static-site.js checks this list against what the pages
+      # actually reference, so `npm run check` fails if the two drift apart.
+      - name: Stage the site
+        run: |
+          mkdir -p _site
+          cp -R \
+            index.html extensions.html 404.html \
+            styles.css main.js image-slot.js \
+            assets \
+            juggler-version.json robots.txt sitemap.xml CNAME \
+            _site/
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

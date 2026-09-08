@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Writing Juggler extensions</title>
+<meta name="description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace. Scaffold one with a single command." />
+<link rel="canonical" href="https://juggler.studio/extensions.html" />
+
+<!-- Icons -->
+<link rel="icon" href="assets/flat-logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/flat-logo.svg" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Juggler" />
+<meta property="og:title" content="Writing Juggler extensions" />
+<meta property="og:description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace." />
+<meta property="og:url" content="https://juggler.studio/extensions.html" />
+<meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Writing Juggler extensions" />
+<meta name="twitter:description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace." />
+<meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <a href="/"><img class="wm" src="assets/juggler-wordmark.svg" alt="Juggler"></a>
+    <div class="topbar-right">
+      <a class="gh-top" href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+    </div>
+  </header>
+
+  <main>
+
+  <h1>Everything is an extension.</h1>
+  <p class="lede">Every tool the model can call — including <span class="q">read</span>, <span class="q">write</span>
+    and <span class="q">bash</span> — is a JavaScript plugin. So are the agentic-loop strategies, the slash commands,
+    the sidebar cards, and the viewers that decide how a file is displayed and what the model sees of it.</p>
+  <p class="lede">Juggler's own built-in extension is loaded through exactly the same path as yours, from the same
+    public SDK. There is no privileged inner tier: anything the app can do, an extension you write can do.</p>
+
+  <div class="section">
+    <h2>Start in about a minute</h2>
+    <p class="lede">You don't need Juggler's source. Everything you need ships in the binary.</p>
+    <pre class="codeblock"><code>juggler ext init my-extension       # a complete, working extension
+juggler ext validate ./my-extension # the same check the app runs at load
+juggler ext link ./my-extension     # symlink it into ~/.juggler/extensions</code></pre>
+    <p class="lede">The scaffold loads unedited, so you start from something that works rather than something that
+      compiles. After <span class="q">link</span>, saving any file hot-reloads the extension in every connected
+      viewer — no restart, for the whole of your dev loop.</p>
+  </div>
+
+  <div class="section">
+    <h2>The five capability types</h2>
+    <ul class="points">
+      <li>
+        <h2>Context item</h2>
+        <p>A tool the model can call. Declare a JSON schema, do the work in <code>execute()</code>, format the outcome
+          in <code>getSummary()</code>. Add an approval gate for anything destructive.</p>
+      </li>
+      <li>
+        <h2>Strategy</h2>
+        <p>A policy for the agentic loop: which tools exist this turn, what gets auto-approved, what guidance the model
+          is given. Read-only and YOLO are just two of these.</p>
+      </li>
+      <li>
+        <h2>Command</h2>
+        <p>A slash command. The simplest capability there is — no LLM, no approval, no schema. (For a reusable
+          <em>prompt</em>, you don't need code at all: a custom command is a markdown file.)</p>
+      </li>
+      <li>
+        <h2>Info card</h2>
+        <p>An ambient tile in the sidebar's spare space, next to Tips, Usage and Git status.</p>
+      </li>
+      <li>
+        <h2>File viewer</h2>
+        <p>Owns a file type end to end: how it's rendered for you, and what's extracted for the model. Those are two
+          different jobs, and they run in two different places.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>A whole tool, start to finish</h2>
+    <p class="lede">Not an excerpt — this is a complete, loadable context item.</p>
+    <pre class="codeblock"><code>import ContextItem from 'juggler/context-item';
+
+class WordCountContextItem extends ContextItem {
+  static MANIFEST = { id: 'word-count', name: 'Word Count', version: '1.0.0',
+    description: 'Count words in a text string' };
+
+  static getToolDefinitions() {
+    return [{
+      name: 'word_count',
+      category: 'read',
+      description: 'Count words in a text string',
+      input_schema: { type: 'object',
+        properties: { text: { type: 'string', description: 'Text to count' } },
+        required: ['text'] }
+    }];
+  }
+
+  async execute(params) {
+    return { count: params.text.split(/\s+/).filter(Boolean).length };
+  }
+
+  getSummary(outcome) {
+    if (!outcome.success) return this.failureSummary(outcome.error);
+    return this.successSummary(outcome.result.count + ' words');
+  }
+}
+
+export default WordCountContextItem;</code></pre>
+    <p class="lede">Extensions import only from the public <code>juggler/*</code> modules — filesystem, shell, search
+      and web operations, UI helpers, and the base classes. That's the same surface the built-in extension uses, which
+      is what makes third-party parity real rather than aspirational.</p>
+  </div>
+
+  <div class="section">
+    <h2>What you're trusting</h2>
+    <p class="lede">Extensions are unsandboxed JavaScript running with the full privileges of the app, exactly like
+      plugins in an editor. An extension declares the host access it uses, and Juggler shows you that declaration
+      before you install — but it is disclosure, not containment. Install and enable only extensions you trust.</p>
+    <p class="lede">The SDK and the built-in extensions are Apache-2.0, so an extension built on them carries no
+      copyleft obligation: license yours however you like, closed source included.</p>
+  </div>
+
+  <div class="section">
+    <h2>Read next</h2>
+    <ul class="roadmap">
+      <li><b><a href="https://github.com/juggler-ai/juggler/blob/main/docs/extension_tutorial.md" target="_blank" rel="noopener">The tutorial</a></b>
+        builds one extension from an empty directory to a published one — a tool, an approval gate, a setting, a slash
+        command and a sidebar card.</li>
+      <li><b><a href="https://github.com/juggler-ai/juggler/blob/main/docs/extension_guide.md" target="_blank" rel="noopener">The guide</a></b>
+        is the reference: the manifest, every capability type, settings and secrets, the trust model, and how context
+        actually reaches the model.</li>
+      <li><b><a href="https://github.com/juggler-ai/juggler/tree/main/examples/extensions" target="_blank" rel="noopener">The examples</a></b>
+        are small extensions meant to be copied, covering every capability type.</li>
+      <li><b><a href="https://github.com/juggler-ai/juggler/tree/main/web/sdk" target="_blank" rel="noopener">The SDK source</a></b>
+        is the canonical API documentation. Each base class opens with a quickstart and a full method reference, and
+        the app can show it to you offline with no checkout.</li>
+    </ul>
+  </div>
+
+  </main>
+
+  <footer class="foot">
+    <div class="row">
+      <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+      <span class="sp">·</span>
+      <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener">Discord</a>
+      <span class="sp">·</span>
+      <a href="/">juggler.studio</a>
+      <span class="copy-r">© 2026 Julian Storer</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
