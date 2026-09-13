@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Juggler — a visual workbench for AI coding agents</title>
-<meta name="description" content="Juggler is a desktop app for people who want to see and control what their LLM is doing to their codebase: inspectable tool calls, branching threads, and editable context. Runs locally, remotely, or both." />
+<meta name="description" content="Juggler is a visual workbench for AI coding agents: persistent conversation trees, inspectable model transactions, and the same live session locally or remotely." />
 <link rel="canonical" href="https://juggler.studio/" />
 
 <!-- Icons -->
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Juggler" />
 <meta property="og:title" content="Juggler — a visual workbench for AI coding agents" />
-<meta property="og:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Runs locally, remotely, or both." />
+<meta property="og:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Work locally or connect to the machine where the code lives." />
 <meta property="og:url" content="https://juggler.studio/" />
 <meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -24,7 +24,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Juggler — a visual workbench for AI coding agents" />
-<meta name="twitter:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context." />
+<meta name="twitter:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Work locally or remotely." />
 <meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,14 +48,13 @@
 
   <main>
 
-  <h1>See what your agent is actually doing.</h1>
-  <p class="lede"><span class="q">Yes, folks — it's another AI coding agent.</span> This one's a desktop
-    workbench for people who want to see and control exactly what the model is doing to their codebase.</p>
-  <p class="lede">It's built by the developer behind <a href="https://juce.com" target="_blank" rel="noopener">JUCE</a>,
-    <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a> and
-    <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>, and got a warm reception on
-    Hacker News when it went public in July. It's free and open-source, with no signup:
-    just download a single Go binary and run it.</p>
+  <h1>See and control your coding agent — locally or remotely.</h1>
+  <p class="lede">Juggler is a visual workbench for AI coding agents. Launch the desktop app and work locally;
+    when the code is on a dev box or server, run Juggler there and open the same live session from the app or a browser.</p>
+  <p class="lede">Conversations are persistent trees rather than scrolling transcripts. Tool calls open into proper
+    views, and every model transaction can be inspected to show what the model received and returned.</p>
+  <p class="lede">Use Claude Code, OpenAI Codex, GitHub Copilot, Gemini, Ollama and other providers through one
+    interface. Juggler is free to download, its core is open source, and it needs no account of its own.</p>
 
   <figure class="section lead-shot">
     <image-slot id="shot-main" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-main.webp" placeholder="screenshot"></image-slot>
@@ -63,26 +62,49 @@
   </figure>
 
   <div class="section">
-    <p class="lede">So what makes this one different from the rest of the pack?</p>
+    <h2>Built for hands-on work</h2>
     <ul class="points">
       <li>
-        <h2>It's a real GUI with obsessive attention to UX</h2>
-        <p>Using a code agent involves editing big chunks of multi-line text, and getting hosed with information that you
-          need to absorb.
-          I find a terminal horrible for tasks like that. The number one priority in Juggler is to evolve the absolutely
-          best-in-class UX for spending long periods of time interacting with LLMs.</p>
+        <h2>A desktop interface for long sessions</h2>
+        <p>Using a coding agent means reading and editing substantial amounts of text. Juggler gives that work a proper
+          interface: Miller-column navigation, focused views for tool calls and context, and controls designed for long sessions.</p>
       </li>
       <li>
         <h2>Conversations are trees, not log files</h2>
-        <p>Any point in a conversation can branch into a sub-thread, recursively.
-          Navigate, drill down, backtrack, duplicate, delete, undo/redo, re-open or branch threads.</p>
+        <p>Branch at any point, recursively. Use a sub-thread for a tangent, delegated task or competing approach, then
+          return only its result to the parent instead of pouring its entire working history into your main context.</p>
       </li>
       <li>
-        <h2>Everything is inspectable</h2>
-        <p>Tool calls, approvals, thread structure, item properties, even the raw context JSON message — all part of the
-          document, all easily viewable</p>
+        <h2>Everything important is inspectable</h2>
+        <p>Open tool arguments, approvals and results in their own views. Open any model transaction to inspect its system
+          prompt, messages, tool definitions, output, token use, timing and stop reason.</p>
       </li>
     </ul>
+  </div>
+
+  <div class="section">
+    <h2>Run it where the code lives</h2>
+    <p class="lede">For most work, launch the desktop app; it starts the local server itself. When the project lives on a
+      dev box or server, run Juggler there instead and open the same interface from the app or a browser.</p>
+    <p class="lede">The server owns the session and does the work; every connected client stays in sync. Keep a desktop
+      view on your main screen, open another in a browser, or check the same session from your phone.</p>
+  </div>
+
+  <figure class="section screens">
+    <div class="screens-row">
+      <image-slot id="shot-large" class="shot shot-screen-lg" shape="rect" fit="contain" src="assets/screenshot-large.webp" placeholder="screenshot"></image-slot>
+      <image-slot id="shot-mobile" class="shot shot-screen-sm" shape="rect" fit="contain" src="assets/screenshot-mobile.webp" placeholder="screenshot"></image-slot>
+    </div>
+    <figcaption class="cap"><b>Big screen or pocket-sized.</b> One live session, in the desktop app or a browser.</figcaption>
+  </figure>
+
+  <div class="section">
+    <h2>The Context Surgeon</h2>
+    <p class="lede">An agent's context should not be a sealed container. Inspect the assembled system prompt and available
+      tools. Fold selected history into a new thread, move or copy items between branches, expand a branch back into its
+      parent, and undo structural changes.</p>
+    <p class="lede">Delegated threads keep their intermediate work out of the parent context and return only the result
+      requested.</p>
   </div>
 
   <div class="section two">
@@ -92,64 +114,55 @@
     </figure>
     <figure>
       <video id="shot-inspect" class="shot shot-square" src="assets/screen-recording-properties.mp4" autoplay loop muted playsinline></video>
-      <figcaption class="cap"><b>Inspect anything.</b> Properties, history, raw context.</figcaption>
+      <figcaption class="cap"><b>Inspect anything.</b> Properties, history and context.</figcaption>
     </figure>
   </div>
 
   <div class="section">
     <ul class="points">
       <li>
-        <h2>Sessions survive quits, crashes and reconnects</h2>
-        <p>A session lives in a database, not in memory. Quitting, relaunching the server, or losing/regaining a
-          connection just resumes where you left it.
-          If an agent was paused mid-run, waiting for you to approve its next step, it'll still be waiting for you after a
-          relaunch, even if you connect from a different device.</p>
-      </li>
-      <li>
-        <h2>Runs locally, remotely, or both at once</h2>
-        <p>A juggler session can have any number of simultaneous client views. The native juggler desktop app and browsers
-          connecting locally or remotely all see the same thing. You can run a headless juggler session on a remote
-          machine
-          and still get the same UI you'd have locally.</p>
+        <h2>Sessions survive quits and reconnects</h2>
+        <p>A session lives on disk, not just in memory. Quit, relaunch or lose the connection and the conversation is still
+          there, including an agent waiting for you to approve its next step.</p>
       </li>
       <li>
         <h2>It supports the usual LLM providers</h2>
-        <p>Claude Code (CLI or API), OpenAI (Codex plan or API), GitHub Copilot, Gemini, Mistral, Z.ai, Ollama,
-          OpenRouter, Deepseek, etc. Bring the subscription you already pay for, or your own API keys.
-          Obviously this list will grow as people request others.</p>
+        <p>Claude Code, Anthropic, OpenAI, Codex, GitHub Copilot, Gemini, Mistral, Z.AI, Ollama, OpenRouter, DeepSeek and
+          other OpenAI-compatible providers. Bring a subscription you already pay for or your own API keys.</p>
+      </li>
+      <li>
+        <h2>Context limits are handled before they become your problem</h2>
+        <p>Juggler sizes the complete request before each call, leaves room for the answer, and compacts older history when
+          a conversation outgrows the model's window.</p>
       </li>
     </ul>
   </div>
-
-  <figure class="section screens">
-    <div class="screens-row">
-      <image-slot id="shot-large" class="shot shot-screen-lg" shape="rect" fit="contain" src="assets/screenshot-large.webp" placeholder="screenshot"></image-slot>
-      <image-slot id="shot-mobile" class="shot shot-screen-sm" shape="rect" fit="contain" src="assets/screenshot-mobile.webp" placeholder="screenshot"></image-slot>
-    </div>
-    <figcaption class="cap"><b>Big screen or pocket-sized.</b> The same live session is served, regardless of whether it's the desktop app or a remote browser on your phone.</figcaption>
-  </figure>
 
   <div class="section">
     <h2>Under the hood</h2>
     <ul class="points">
       <li>
-        <h2>A small, dependency-free Go binary</h2>
-        <p>This isn't a node app! It's a small, dependency-free binary, written in Go, using Javascript for UI and
-          plugins. Conversations are tree-shaped Yjs documents, synced live to every connected client.</p>
+        <h2>Go, not Electron</h2>
+        <p>Juggler ships as a native desktop app and matching server. The backend is Go; the interface is type-checked
+          JavaScript served directly, with no frontend compilation step. Conversations are Yjs documents synced live to
+          every connected client.</p>
       </li>
       <li>
-        <h2>Everything is an extension</h2>
-        <p>Context items, LLM loop strategies, slash commands, file viewers, info cards, and their UIs are all JavaScript
-          plugins you can inspect, fork, or replace.
-          Every tool, even basics like read/write/bash, is a plugin you can swap out. MCP servers and skills plug into
-          the same document, so anything you've already set up comes along.
-          <a href="extensions.html">Writing one</a> takes a single command to scaffold.</p>
+        <h2>Built to be extended</h2>
+        <p>Context items, LLM loop strategies, slash commands, file viewers, info cards, Pinboard tabs and their UIs are
+          JavaScript extensions you can inspect, fork or replace. Even tools such as read, write and bash use the public
+          extension SDK. <a href="extensions.html">Writing one</a> starts with a single scaffold command.</p>
       </li>
       <li>
-        <h2>Open-source</h2>
-        <p>The extensions API and
-          juggler core extension are Apache-2.0 licensed. The main app itself is AGPLv3.
-          Friction-free for the agent-curious to kick the tyres.</p>
+        <h2>MCP tools, fully inspectable</h2>
+        <p>Connect a local or remote MCP server and follow the whole handoff: the schema offered to the model, generated
+          arguments, approval, result and error. Inspect server status and logs, filter individual tools, and compare what
+          is available now with what a past model turn actually received.</p>
+      </li>
+      <li>
+        <h2>Open-source core, permissive extension SDK</h2>
+        <p>The main application is AGPLv3. The extension SDK, bundled extensions and examples are Apache-2.0, so extensions
+          can remain closed source.</p>
       </li>
     </ul>
   </div>
@@ -157,63 +170,48 @@
   <div class="section two">
     <figure>
       <image-slot id="shot-extra-1" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-browser.webp" placeholder="screenshot"></image-slot>
-      <figcaption class="cap"><b>A session supports multiple clients.</b> The desktop app and/or browser views are all synced.</figcaption>
+      <figcaption class="cap"><b>A session supports multiple clients.</b> Desktop and browser views stay in sync.</figcaption>
     </figure>
     <figure>
       <image-slot id="shot-extra-2" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-extensions.webp" placeholder="screenshot"></image-slot>
-      <figcaption class="cap"><b>Everything's a plugin.</b> All the LLM-facing tools are defined in extensions.</figcaption>
+      <figcaption class="cap"><b>Built on extensions.</b> The LLM-facing tools use the same public SDK available to you.</figcaption>
     </figure>
   </div>
 
   <div class="section">
     <h2>Who's building this?</h2>
-    <p class="lede">I've been a C++ developer for 30+ years, and the best things I created in that time
-      happened when I got annoyed at some tool I had to use, and decided to write my own version.
-      I ended up with a <a href="https://www.tracktion.com" target="_blank" rel="noopener">DAW</a>, a <a href="https://juce.com" target="_blank" rel="noopener">C++ framework</a>, and a <a href="https://cmajor.dev" target="_blank" rel="noopener">DSP language</a> that way.</p>
-    <p class="lede">Luckily (so far) enough people have shared my taste that those projects found a decent audience.</p>
-    <p class="lede">I had a similar moment with AI agents. It's pretty clear that the rest of my coding
-      career will involve staring at some kind of code-agent tool all day, so I decided to have a stab at making
-      one that feels right to me. I may be arriving at the AI agent party after all the booze has been drunk, but
-      maybe there's still some fun to be had..</p>
-    <p class="lede">In this case, the annoyances I was trying to improve on were the UX, and the data model under the hood.</p>
+    <p class="lede">I've spent more than 30 years building tools for developers and creators, including
+      <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
+      <a href="https://juce.com" target="_blank" rel="noopener">JUCE</a> and
+      <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>.</p>
+    <p class="lede">Juggler came from the same instinct as those projects: if I'm going to spend a substantial part of my
+      working life using a tool, its interface and foundations need to hold up. This is the coding-agent workbench I want
+      to use.</p>
   </div>
 
   <div class="section">
-    <h2>Status and Roadmap</h2>
-    <p class="lede">
-      Juggler is still very new, and since its release I've churned out hundreds of changes in response to feedback
-      from people trying it out: some big new features, lots of stability fixes,
-      and lots of UX nitpicks. Agent tools are moving at an eye-watering pace, but I spent a long time getting Juggler's foundations
-      solid to enable fast iteration.</p>
-    <p class="lede">
-      The big features coming over the next few weeks:
-    </p>
-    <ul class="roadmap">
-      <li><b>A "workspace" abstraction.</b> The filesystem and execution environment a task runs in becomes an abstraction,
-        so plugins can add worktrees, remote SSH to build machines, sandboxing, and other exotic environments.</li>
-      <li><b>Recursive Language Models.</b> Prime Intellect put out a piece calling these the paradigm of 2026, and everyone
-        got very excited. Juggler's thread-folding architecture already does the hard part, so I just need the remaining
-        plumbing to let a model search its own history.</li>
-      <li><b>The terminal app becomes a real server.</b> Today you run Juggler headlessly in one project folder and connect
-        clients to it. That grows into a proper server: one machine, many clients, many projects, plus (optional!) user
-        accounts, so you can log in anywhere and enumerate your own servers.</li>
-    </ul>
-    <p class="lede">Constructive feedback is welcome - come and say hello on the <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg class="di" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a> -
-      but be gentle! This isn't being developed by a huge team at a trillion-dollar AI company, it's a
-      one-man side-hustle, and I have several other jobs :)</p>
+    <h2>Active development</h2>
+    <p class="lede">Juggler is moving quickly, with frequent releases shaped by people using it on real projects. Follow
+      the <a href="https://github.com/juggler-ai/juggler/blob/main/CHANGELOG.md" target="_blank" rel="noopener">changelog</a>
+      for the details.</p>
+    <p class="lede">Constructive feedback is welcome on the <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg class="di" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a>.</p>
   </div>
+
+  <figure class="section">
+    <video id="shot-svg" class="shot shot-wide" src="assets/screen-recording-pelican.mp4" aria-label="A reply drawing an SVG of a pelican riding a bicycle as it streams in" autoplay loop muted playsinline></video>
+  </figure>
 
   <div class="section downloads" data-dl-app="desktop">
     <div class="get">
       <div class="card">
         <p class="k">No terminal required</p>
         <h2>The desktop app</h2>
-        <p>Download it, drag it to Applications, and double-click. It launches the agent and its local server for you — nothing else to set up.</p>
+        <p>Download and launch it. The app starts its matching local server and opens your project — no terminal required.</p>
       </div>
       <div class="card">
         <p class="k">For long-lived &amp; remote sessions</p>
         <h2>The terminal server</h2>
-        <p>Run the headless <code>juggler</code> binary on the machine where your code lives, then attach from any browser or the desktop app — on your laptop or across the network.</p>
+        <p>Run the headless <code>juggler</code> binary on the machine where your code lives, then attach from a browser or the desktop app — locally or across the network.</p>
       </div>
     </div>
     <div class="dl-cta">
@@ -226,7 +224,7 @@
         <a data-dl-os="linux" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Linux</a>
       </p>
     </div>
-    <p class="get-note">Free and open-source. No signup, no node, no electron - a single Go binary.</p>
+    <p class="get-note">Free to download. Open-source core. No Juggler account. No Electron.</p>
   </div>
 
   </main>

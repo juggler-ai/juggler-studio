@@ -79,13 +79,16 @@ image-slot,.shot{display:block;width:100%;height:auto;}
    so `contain` shows the whole shot with no crop and no letterbox, and clear
    the slot's own border/tint so the page shows through the transparent edges. */
 .shot{aspect-ratio:64/47;border:0;background:transparent;}
-/* Screen-recording MP4s encode to 1280×746 — their own ratio, fit without distortion. */
+/* Screen-recording MP4s are 1280 wide at whatever height they were captured —
+   each slot carries that clip's own ratio, so they fit without distortion. */
 video.shot{object-fit:contain;}
 #shot-threads,#shot-inspect{aspect-ratio:640/373;}
+#shot-svg{aspect-ratio:160/117;}
 .shot::part(frame){background:transparent;}
-/* Lead/hero shot: a touch smaller than the column and centred, with less air above. */
+/* A wide shot sits a touch narrower than the column, centred. */
+.shot-wide{max-width:40rem;margin-inline:auto;}
+/* Lead/hero shot: less air above. */
 .lead-shot{margin-top:3.25rem;}
-.lead-shot .shot-wide{max-width:40rem;margin-inline:auto;}
 /* Paired screens: a desktop shot beside a phone shot, sharing one caption.
    Vertically centred on a common row; the phone stays narrow. */
 .screens-row{display:flex;gap:1.5rem;align-items:center;justify-content:center;}
