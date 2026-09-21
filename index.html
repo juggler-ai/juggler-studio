@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Juggler — a visual workbench for AI coding agents</title>
-<meta name="description" content="Juggler is a visual workbench for AI coding agents: persistent conversation trees, inspectable model transactions, and the same live session locally or remotely." />
+<meta name="description" content="Your agent's conversation is a tree, not a log file. Juggler is a visual workbench for AI coding agents: branch anywhere, inspect every model transaction, and run the same live session locally or remotely." />
 <link rel="canonical" href="https://juggler.studio/" />
 
 <!-- Icons -->
@@ -48,11 +48,13 @@
 
   <main>
 
-  <h1>See and control your coding agent — locally or remotely.</h1>
-  <p class="lede">Juggler is a visual workbench for AI coding agents. Launch the desktop app and work locally;
-    when the code is on a dev box or server, run Juggler there and open the same live session from the app or a browser.</p>
-  <p class="lede">Conversations are persistent trees rather than scrolling transcripts. Tool calls open into proper
-    views, and every model transaction can be inspected to show what the model received and returned.</p>
+  <h1>Your agent's conversation is a tree, not a log file.</h1>
+  <p class="lede">Juggler is a visual workbench for AI coding agents. Branch at any point, recursively: send a tangent,
+    a delegated task or a competing approach into a sub-thread, and return only its result to the parent instead of
+    pouring its whole working history into your main context.</p>
+  <p class="lede">Tool calls open into proper views, and every model transaction can be inspected — what the model
+    received, what it returned. Work locally, or run Juggler on the machine where the code lives and open the same live
+    session from the app or a browser.</p>
   <p class="lede">Use Claude Code, OpenAI Codex, GitHub Copilot, Gemini, Ollama and other providers through one
     interface. Juggler is open source, free to download, and needs no account of its own.</p>
 
@@ -60,6 +62,17 @@
     <image-slot id="shot-main" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-main.webp" placeholder="screenshot"></image-slot>
     <figcaption class="cap">Tool calls, item properties and nested sub-threads laid out in a Finder-style Miller column view</figcaption>
   </figure>
+
+  <div class="section two">
+    <figure>
+      <video id="shot-threads" class="shot shot-square" src="assets/screen-recording-threads.mp4" autoplay loop muted playsinline></video>
+      <figcaption class="cap"><b>Branching threads.</b> Sub-threads, all the way down.</figcaption>
+    </figure>
+    <figure>
+      <video id="shot-inspect" class="shot shot-square" src="assets/screen-recording-properties.mp4" autoplay loop muted playsinline></video>
+      <figcaption class="cap"><b>Inspect anything.</b> Properties, history and context.</figcaption>
+    </figure>
+  </div>
 
   <div class="section">
     <h2>Built for hands-on work</h2>
@@ -70,9 +83,9 @@
           interface: Miller-column navigation, focused views for tool calls and context, and controls designed for long sessions.</p>
       </li>
       <li>
-        <h2>Conversations are trees, not log files</h2>
-        <p>Branch at any point, recursively. Use a sub-thread for a tangent, delegated task or competing approach, then
-          return only its result to the parent instead of pouring its entire working history into your main context.</p>
+        <h2>Branching is recursive</h2>
+        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go, keep
+          the whole excursion out of the parent, and bring back only the answer.</p>
       </li>
       <li>
         <h2>Everything important is inspectable</h2>
@@ -105,17 +118,6 @@
       parent, and undo structural changes.</p>
     <p class="lede">Delegated threads keep their intermediate work out of the parent context and return only the result
       requested.</p>
-  </div>
-
-  <div class="section two">
-    <figure>
-      <video id="shot-threads" class="shot shot-square" src="assets/screen-recording-threads.mp4" autoplay loop muted playsinline></video>
-      <figcaption class="cap"><b>Branching threads.</b> Sub-threads, all the way down.</figcaption>
-    </figure>
-    <figure>
-      <video id="shot-inspect" class="shot shot-square" src="assets/screen-recording-properties.mp4" autoplay loop muted playsinline></video>
-      <figcaption class="cap"><b>Inspect anything.</b> Properties, history and context.</figcaption>
-    </figure>
   </div>
 
   <div class="section">
