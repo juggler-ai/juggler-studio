@@ -49,14 +49,16 @@
   <main>
 
   <h1>Your agent's conversation is a tree, not a log file.</h1>
-  <p class="lede">Juggler is a visual workbench for AI coding agents. Branch at any point, recursively: send a tangent,
-    a delegated task or a competing approach into a sub-thread, and return only its result to the parent instead of
-    pouring its whole working history into your main context.</p>
-  <p class="lede">Tool calls open into proper views, and every model transaction can be inspected — what the model
-    received, what it returned. Work locally, or run Juggler on the machine where the code lives and open the same live
-    session from the app or a browser.</p>
-  <p class="lede">Use Claude Code, OpenAI Codex, GitHub Copilot, Gemini, Ollama and other providers through one
-    interface. Juggler is open source, free to download, and needs no account of its own.</p>
+  <p class="lede">Juggler is a visual workbench for AI coding agents: branch into sub-threads that return only their
+    results, inspect every tool call and model transaction, and open the same live session from desktop, browser or
+    phone.</p>
+  <ul class="chips">
+    <li>Open source</li>
+    <li>Free</li>
+    <li>No account</li>
+    <li>Vendor-neutral</li>
+    <li>Direct to your provider</li>
+  </ul>
 
   <figure class="section lead-shot">
     <image-slot id="shot-main" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-main.webp" placeholder="screenshot"></image-slot>
@@ -80,27 +82,26 @@
       <li>
         <h2>A desktop interface for long sessions</h2>
         <p>Using a coding agent means reading and editing substantial amounts of text. Juggler gives that work a proper
-          interface: Miller-column navigation, focused views for tool calls and context, and controls designed for long sessions.</p>
+          interface: Miller-column navigation and focused views, built for long sessions.</p>
       </li>
       <li>
         <h2>Branching is recursive</h2>
-        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go, keep
-          the whole excursion out of the parent, and bring back only the answer.</p>
+        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go, and
+          bring back only the answer.</p>
       </li>
       <li>
         <h2>Everything important is inspectable</h2>
-        <p>Open tool arguments, approvals and results in their own views. Open any model transaction to inspect its system
-          prompt, messages, tool definitions, output, token use, timing and stop reason.</p>
+        <p>Open tool arguments, approvals and results in their own views. Open any model transaction: system prompt,
+          messages, tool definitions, output, token use, timing, stop reason.</p>
       </li>
     </ul>
   </div>
 
   <div class="section">
     <h2>Run it where the code lives</h2>
-    <p class="lede">For most work, launch the desktop app; it starts the local server itself. When the project lives on a
-      dev box or server, run Juggler there instead and open the same interface from the app or a browser.</p>
-    <p class="lede">The server owns the session and does the work; every connected client stays in sync. Keep a desktop
-      view on your main screen, open another in a browser, or check the same session from your phone.</p>
+    <p class="lede">Launch the desktop app and everything runs locally. When the project lives on a dev box or server,
+      run Juggler there instead: the server owns the session, and every connected client — app, browser, phone — stays
+      in sync.</p>
   </div>
 
   <figure class="section screens">
@@ -113,11 +114,9 @@
 
   <div class="section">
     <h2>The Context Surgeon</h2>
-    <p class="lede">An agent's context should not be a sealed container. Inspect the assembled system prompt and available
-      tools. Fold selected history into a new thread, move or copy items between branches, expand a branch back into its
-      parent, and undo structural changes.</p>
-    <p class="lede">Delegated threads keep their intermediate work out of the parent context and return only the result
-      requested.</p>
+    <p class="lede">An agent's context should not be a sealed container. Inspect the assembled system prompt and tools,
+      fold history into a new thread, move items between branches, expand a branch back into its parent — and undo any
+      of it.</p>
   </div>
 
   <div class="section">
@@ -128,9 +127,16 @@
           there, including an agent waiting for you to approve its next step.</p>
       </li>
       <li>
-        <h2>It supports the usual LLM providers</h2>
+        <h2>Vendor-neutral, with no house model</h2>
         <p>Claude Code, Anthropic, OpenAI, Codex, GitHub Copilot, Gemini, Mistral, Z.AI, Ollama, OpenRouter, DeepSeek and
-          other OpenAI-compatible providers. Bring a subscription you already pay for or your own API keys.</p>
+          other OpenAI-compatible providers. Bring a subscription you already pay for, or your own API keys. Juggler sells
+          no tokens, so it has no stake in which you pick — switch provider or model mid-conversation.</p>
+      </li>
+      <li>
+        <h2>Nothing intercepts what you send</h2>
+        <p>Model traffic goes direct from your machine to the provider you chose: no server in the path, no cloud index of
+          your repository. Conversations and API keys stay on your own disk, and the source is public, so none of that has
+          to be taken on trust.</p>
       </li>
       <li>
         <h2>Context limits are handled before they become your problem</h2>
@@ -145,28 +151,26 @@
     <ul class="points">
       <li>
         <h2>Go, not Electron</h2>
-        <p>Juggler ships as a native desktop app and matching server. The backend is Go; the interface is type-checked
-          JavaScript served directly, with no frontend compilation step. Conversations are Yjs documents synced live to
-          every connected client.</p>
+        <p>A native desktop app and matching server. The backend is Go; the interface is type-checked JavaScript served
+          directly, with no frontend compilation step. Conversations are Yjs documents synced live to every client.</p>
       </li>
       <li>
         <h2>Built to be extended</h2>
-        <p>Context items, LLM loop strategies, slash commands, file viewers, info cards, Pinboard tabs and their UIs are
-          JavaScript extensions you can inspect, fork or replace. Even tools such as read, write and bash use the public
-          extension SDK. <a href="extensions.html">Writing one</a> starts with a single scaffold command.</p>
+        <p>Context items, LLM loop strategies, slash commands, file viewers and their UIs are JavaScript extensions you can
+          inspect, fork or replace — even read, write and bash use the public SDK.
+          <a href="extensions.html">Writing one</a> starts with a single scaffold command.</p>
       </li>
       <li>
         <h2>MCP tools, fully inspectable</h2>
-        <p>Connect a local or remote MCP server and follow the whole handoff: the schema offered to the model, generated
-          arguments, approval, result and error. Inspect server status and logs, filter individual tools, and compare what
-          is available now with what a past model turn actually received.</p>
+        <p>Connect a local or remote MCP server and follow the whole handoff: schema, generated arguments, approval, result.
+          Inspect server status and logs, filter individual tools, and see what a past model turn actually received.</p>
       </li>
       <li>
         <h2>AGPLv3 application, permissive extension SDK</h2>
-        <p>The main application is AGPLv3. The extension SDK, bundled extensions and examples are Apache-2.0, so extensions
-          can remain closed source. A build from the
-          <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener">source repository</a> supports local
-          and LAN access; the official binaries also include WAN modes for reaching your server over the internet — see
+        <p>The application is AGPLv3; the extension SDK and bundled extensions are Apache-2.0, so extensions can remain
+          closed source. A build from
+          <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener">source</a> supports local and LAN
+          access; the official binaries add WAN modes — see
           <a href="https://github.com/juggler-ai/juggler/blob/main/LICENSING.md" target="_blank" rel="noopener">LICENSING.md</a>
           for the boundary.</p>
       </li>
@@ -190,16 +194,15 @@
       <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
       <a href="https://juce.com" target="_blank" rel="noopener">JUCE</a> and
       <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>.</p>
-    <p class="lede">Juggler came from the same instinct as those projects: if I'm going to spend a substantial part of my
-      working life using a tool, its interface and foundations need to hold up. This is the coding-agent workbench I want
-      to use.</p>
+    <p class="lede">Juggler came from the same instinct: if I'm going to spend a substantial part of my working life in a
+      tool, its interface and foundations need to hold up. This is the coding-agent workbench I want to use.</p>
   </div>
 
   <div class="section">
     <h2>Active development</h2>
-    <p class="lede">Juggler is moving quickly, with frequent releases shaped by people using it on real projects. Follow
-      the <a href="https://github.com/juggler-ai/juggler/blob/main/CHANGELOG.md" target="_blank" rel="noopener">changelog</a>
-      for the details.</p>
+    <p class="lede">Frequent releases, shaped by people using it on real projects — the
+      <a href="https://github.com/juggler-ai/juggler/blob/main/CHANGELOG.md" target="_blank" rel="noopener">changelog</a>
+      has the details.</p>
     <p class="lede">Constructive feedback is welcome on the <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg class="di" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a>.</p>
   </div>
 
@@ -212,12 +215,12 @@
       <div class="card">
         <p class="k">No terminal required</p>
         <h2>The desktop app</h2>
-        <p>Download and launch it. The app starts its matching local server and opens your project — no terminal required.</p>
+        <p>Download and launch it. The app starts its matching local server and opens your project.</p>
       </div>
       <div class="card">
         <p class="k">For long-lived &amp; remote sessions</p>
         <h2>The terminal server</h2>
-        <p>Run the headless <code>juggler</code> binary on the machine where your code lives, then attach from a browser or the desktop app — locally or across the network.</p>
+        <p>Run the headless <code>juggler</code> binary where your code lives, then attach from a browser or the desktop app.</p>
       </div>
     </div>
     <div class="dl-cta">

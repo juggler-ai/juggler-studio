@@ -50,6 +50,12 @@ h1{font-weight:600;font-size:1.8rem;text-wrap:balance;}
 .lede:last-of-type{margin-bottom:0;}
  .lede .q{color:var(--ink);}
  .lede a .di{width:1.1rem;height:1.1rem;vertical-align:-.165rem;margin-right:.275rem;fill:currentColor;}
+/* hero chips: the free/open/private facts as a strip, not paragraphs */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 0;padding:0;list-style:none;}
+.chips li{font-family:var(--mono);font-size:.65625rem;letter-spacing:.13rem;text-transform:uppercase;
+  color:var(--ink-3);border:.0625rem solid var(--rule);border-radius:1rem;padding:.3125rem .8125rem;
+  white-space:nowrap;}
+
 .error-page{min-height:100%;display:flex;flex-direction:column;justify-content:center;}
 .error-page .code{font-family:var(--mono);font-size:.6875rem;letter-spacing:.14rem;text-transform:uppercase;
   color:var(--ink-3);margin:0 0 1.125rem;}
