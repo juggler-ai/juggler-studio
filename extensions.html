@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Writing Juggler extensions</title>
-<meta name="description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace. Scaffold one with a single command." />
+<meta name="description" content="Every tool, strategy, slash command, file viewer, sidebar card, Pinboard tab and workspace type in Juggler is a JavaScript extension you can fork or replace. Scaffold one with a single command." />
 <link rel="canonical" href="https://juggler.studio/extensions.html" />
 
 <!-- Icons -->
@@ -15,7 +15,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Juggler" />
 <meta property="og:title" content="Writing Juggler extensions" />
-<meta property="og:description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace." />
+<meta property="og:description" content="Every tool, strategy, slash command, file viewer, sidebar card, Pinboard tab and workspace type in Juggler is a JavaScript extension you can fork or replace." />
 <meta property="og:url" content="https://juggler.studio/extensions.html" />
 <meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -24,7 +24,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Writing Juggler extensions" />
-<meta name="twitter:description" content="Every tool, strategy, slash command, sidebar card and file viewer in Juggler is a JavaScript extension you can fork or replace." />
+<meta name="twitter:description" content="Every tool, strategy, slash command, file viewer, sidebar card, Pinboard tab and workspace type in Juggler is a JavaScript extension you can fork or replace." />
 <meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,7 +63,9 @@ juggler ext link ./my-extension     # symlink it into ~/.juggler/extensions</cod
   </div>
 
   <div class="section">
-    <h2>The five capability types</h2>
+    <h2>What an extension can be</h2>
+    <p class="lede">Juggler is assembled from a small set of abstractions, and every one of them is a capability an
+      extension can supply.</p>
     <ul class="points">
       <li>
         <h2>Context item</h2>
@@ -81,13 +83,24 @@ juggler ext link ./my-extension     # symlink it into ~/.juggler/extensions</cod
           <em>prompt</em>, you don't need code at all: a custom command is a markdown file.)</p>
       </li>
       <li>
-        <h2>Info card</h2>
-        <p>An ambient tile in the sidebar's spare space, next to Tips, Usage and Git status.</p>
+        <h2>Workspace provider</h2>
+        <p>Supplies an environment for a conversation's tools to run in. The built-in git-worktree, scratch-copy and
+          project-folder kinds are providers like any other; yours could provision an ssh host or a container.
+          <a href="workspaces.html">How workspaces work</a>.</p>
       </li>
       <li>
         <h2>File viewer</h2>
         <p>Owns a file type end to end: how it's rendered for you, and what's extracted for the model. Those are two
           different jobs, and they run in two different places.</p>
+      </li>
+      <li>
+        <h2>Info card</h2>
+        <p>An ambient tile in the sidebar's spare space, next to Tips, Usage and Git status.</p>
+      </li>
+      <li>
+        <h2>Pinboard tab</h2>
+        <p>A view the user can pin and keep beside the conversation — git status, the current plan, a file held in
+          view. Display only, by design: the SDK gives it no way to feed the model.</p>
       </li>
     </ul>
   </div>

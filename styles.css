@@ -3,6 +3,7 @@
   --ink:#1f1a12; --ink-2:#4a4234; --ink-3:#8a7f69;
   --rule:#d8ccb0;
   --accent:#b54521;
+  --code-name:#427b58; --code-comment:#8f3f71;
   --sans:'Instrument Sans','Inter',-apple-system,system-ui,sans-serif;
   --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
   --wm-filter:none;
@@ -14,6 +15,7 @@
   :root{
     --paper:#1b1916; --paper-2:#262320; --ink:#f1eae0; --ink-2:#c0b7a6;
     --ink-3:#8b8273; --rule:#39342d; --accent:#e3673d;
+    --code-name:#8ec07c; --code-comment:#d3869b;
     --wm-filter:invert(1) hue-rotate(180deg) brightness(1.12);
   }
 }
@@ -50,11 +52,12 @@ h1{font-weight:600;font-size:1.8rem;text-wrap:balance;}
 .lede:last-of-type{margin-bottom:0;}
  .lede .q{color:var(--ink);}
  .lede a .di{width:1.1rem;height:1.1rem;vertical-align:-.165rem;margin-right:.275rem;fill:currentColor;}
-/* hero chips: the free/open/private facts as a strip, not paragraphs */
-.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.5rem 0 0;padding:0;list-style:none;}
-.chips li{font-family:var(--mono);font-size:.65625rem;letter-spacing:.13rem;text-transform:uppercase;
-  color:var(--ink-3);border:.0625rem solid var(--rule);border-radius:1rem;padding:.3125rem .8125rem;
-  white-space:nowrap;}
+/* hero chips: the free/open/private facts as one quiet dot-separated run —
+   the same separator language as .dl-os-list, and nothing like a button */
+.chips{display:flex;flex-wrap:wrap;gap:.375rem .875rem;margin:1.375rem 0 0;padding:0;list-style:none;
+  font-size:.9375rem;font-weight:500;color:var(--ink);}
+.chips li{white-space:nowrap;}
+.chips li + li::before{content:'·';color:var(--accent);margin-right:.875rem;}
 
 .error-page{min-height:100%;display:flex;flex-direction:column;justify-content:center;}
 .error-page .code{font-family:var(--mono);font-size:.6875rem;letter-spacing:.14rem;text-transform:uppercase;
@@ -122,6 +125,13 @@ video.shot{object-fit:contain;}
 .lightbox-open{overflow:hidden;}
 
 .two{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+/* the capability list, written as what it literally is: the SDK's imports.
+   Comments sit above their import and wrap rather than scroll. */
+.caps-code{white-space:pre-wrap;color:var(--ink-3);}
+.caps-code .n{color:var(--code-name);font-weight:600;}
+.caps-code .s{color:var(--accent);}
+.caps-code .c{color:var(--code-comment);}
 
 /* the points */
 .points{margin:0;padding:0;list-style:none;}

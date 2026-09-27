@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Juggler — a visual workbench for AI coding agents</title>
-<meta name="description" content="Your agent's conversation is a tree, not a log file. Juggler is a visual workbench for AI coding agents: branch anywhere, inspect every model transaction, and run the same live session locally or remotely." />
+<title>Juggler — a GUI-first AI coding harness</title>
+<meta name="description" content="The agent loop is the easy part. Juggler is a GUI-first AI coding harness from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
 <link rel="canonical" href="https://juggler.studio/" />
 
 <!-- Icons -->
@@ -14,8 +14,8 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Juggler" />
-<meta property="og:title" content="Juggler — a visual workbench for AI coding agents" />
-<meta property="og:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Work locally or connect to the machine where the code lives." />
+<meta property="og:title" content="Juggler — a GUI-first AI coding harness" />
+<meta property="og:description" content="A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
 <meta property="og:url" content="https://juggler.studio/" />
 <meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -23,8 +23,8 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Juggler — a visual workbench for AI coding agents" />
-<meta name="twitter:description" content="See and control what your LLM is doing to your codebase: inspectable tool calls, branching threads, and editable context. Work locally or remotely." />
+<meta name="twitter:title" content="Juggler — a GUI-first AI coding harness" />
+<meta name="twitter:description" content="A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: Go server, CRDT conversations, branching threads, everything inspectable." />
 <meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,10 +48,12 @@
 
   <main>
 
-  <h1>Your agent's conversation is a tree, not a log file.</h1>
-  <p class="lede">Juggler is a visual workbench for AI coding agents: branch into sub-threads that return only their
-    results, inspect every tool call and model transaction, and open the same live session from desktop, browser or
-    phone.</p>
+  <h1>The agent loop is the easy part.</h1>
+  <p class="lede">Juggler is a GUI-first AI coding harness, built by Julian Storer
+    (<a href="https://juce.com" target="_blank" rel="noopener">JUCE</a>,
+    <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
+    <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>). It's a native Go server,
+    conversations are CRDTs synced live to local and remote clients, and no Electron in sight.</p>
   <ul class="chips">
     <li>Open source</li>
     <li>Free</li>
@@ -65,6 +67,64 @@
     <figcaption class="cap">Tool calls, item properties and nested sub-threads laid out in a Finder-style Miller column view</figcaption>
   </figure>
 
+  <div class="section">
+    <h2>Under the hood</h2>
+    <ul class="points">
+      <li>
+        <h2>A native app and a matching server</h2>
+        <p>The backend is Go; the interface is type-checked JavaScript served directly, with no frontend compilation step.
+          Conversations are Yjs documents, so every connected client converges on the same live state.</p>
+      </li>
+      <li>
+        <h2>A state machine, not a while-loop</h2>
+        <p>The turn cycle — model, tools, approval, next call — advances by named state transitions in the conversation
+          document, not by a loop holding it all in memory. An approval is a state rather than a blocked process, so a
+          turn can be interrupted anywhere and carry on later as if nothing had happened.</p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Everything is an extension</h2>
+    <p class="lede">Juggler is assembled from a small set of abstractions, and every one of them is a capability an
+      extension can supply — even read, write and bash go through the public SDK. There is no privileged inner
+      tier.</p>
+    <pre class="codeblock caps-code"><code><span class="c">// A tool the model can call: a JSON schema in, an approval gate if</span>
+<span class="c">// it's destructive, a structured result out.</span>
+import <span class="n">ContextItem</span> from <span class="s">'juggler/context-item'</span>;
+
+<span class="c">// The policy of the agentic loop: which tools exist this turn, what</span>
+<span class="c">// gets auto-approved, what guidance the model is given.</span>
+import <span class="n">Strategy</span> from <span class="s">'juggler/strategy-type'</span>;
+
+<span class="c">// A slash command — no LLM, no approval, the simplest capability.</span>
+import <span class="n">Command</span> from <span class="s">'juggler/command-type'</span>;
+
+<span class="c">// An environment for a conversation's tools to run in. The built-in</span>
+<span class="c">// git-worktree, scratch-copy and project-folder providers are three;</span>
+<span class="c">// an ssh host or a container could be a fourth.</span>
+import <span class="n">WorkspaceProvider</span> from <span class="s">'juggler/workspace-provider'</span>;
+
+<span class="c">// Owns a file type end to end: how it renders for you, and what the</span>
+<span class="c">// model sees of it — two different jobs, in two different places.</span>
+import <span class="n">FileViewer</span> from <span class="s">'juggler/file-viewer'</span>;
+
+<span class="c">// An ambient tile in the sidebar, alongside Tips and Git status.</span>
+import <span class="n">InfoCard</span> from <span class="s">'juggler/info-card-type'</span>;
+
+<span class="c">// A view the user pins beside the conversation. Display only, by</span>
+<span class="c">// design: it has no way to feed the model.</span>
+import <span class="n">PinboardItem</span> from <span class="s">'juggler/pinboard-item-type'</span>;</code></pre>
+    <p class="lede">Those imports are real. <a href="extensions.html">Writing an extension</a> starts with a single
+      scaffold command.</p>
+  </div>
+
+  <div class="section">
+    <h2>Your agent's conversation is a tree, not a log file.</h2>
+    <p class="lede">Branch at any point: send a tangent, a delegated task or a competing approach into a sub-thread, and
+      bring back only its result instead of pouring the whole excursion into your main context.</p>
+  </div>
+
   <div class="section two">
     <figure>
       <video id="shot-threads" class="shot shot-square" src="assets/screen-recording-threads.mp4" autoplay loop muted playsinline></video>
@@ -77,7 +137,6 @@
   </div>
 
   <div class="section">
-    <h2>Built for hands-on work</h2>
     <ul class="points">
       <li>
         <h2>A desktop interface for long sessions</h2>
@@ -86,8 +145,7 @@
       </li>
       <li>
         <h2>Branching is recursive</h2>
-        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go, and
-          bring back only the answer.</p>
+        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go.</p>
       </li>
       <li>
         <h2>Everything important is inspectable</h2>
@@ -98,10 +156,21 @@
   </div>
 
   <div class="section">
+    <h2>Give each agent its own place to work</h2>
+    <p class="lede">Run several conversations on one project without them treading on each other: each works in its own
+      workspace — a git worktree on another branch, a throwaway scratch copy, or one folder of a monorepo.</p>
+    <figure class="lead-shot">
+      <image-slot id="shot-workspaces" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-workspaces.webp" placeholder="screenshot"></image-slot>
+      <figcaption class="cap"><b>Workspaces in the tab strip.</b> Conversations sharing a workspace are boxed together.</figcaption>
+    </figure>
+    <p class="lede"><a href="workspaces.html">How workspaces work →</a></p>
+  </div>
+
+  <div class="section">
     <h2>Run it where the code lives</h2>
     <p class="lede">Launch the desktop app and everything runs locally. When the project lives on a dev box or server,
-      run Juggler there instead: the server owns the session, and every connected client — app, browser, phone — stays
-      in sync.</p>
+      run Juggler there instead: the session lives with the code, and every connected client — app, browser, phone —
+      stays in sync.</p>
   </div>
 
   <figure class="section screens">
@@ -114,7 +183,7 @@
 
   <div class="section">
     <h2>The Context Surgeon</h2>
-    <p class="lede">An agent's context should not be a sealed container. Inspect the assembled system prompt and tools,
+    <p class="lede">An agent's context should not be a sealed container. Open the assembled system prompt and tools,
       fold history into a new thread, move items between branches, expand a branch back into its parent — and undo any
       of it.</p>
   </div>
@@ -143,27 +212,10 @@
         <p>Juggler sizes the complete request before each call, leaves room for the answer, and compacts older history when
           a conversation outgrows the model's window.</p>
       </li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>Under the hood</h2>
-    <ul class="points">
-      <li>
-        <h2>Go, not Electron</h2>
-        <p>A native desktop app and matching server. The backend is Go; the interface is type-checked JavaScript served
-          directly, with no frontend compilation step. Conversations are Yjs documents synced live to every client.</p>
-      </li>
-      <li>
-        <h2>Built to be extended</h2>
-        <p>Context items, LLM loop strategies, slash commands, file viewers and their UIs are JavaScript extensions you can
-          inspect, fork or replace — even read, write and bash use the public SDK.
-          <a href="extensions.html">Writing one</a> starts with a single scaffold command.</p>
-      </li>
       <li>
         <h2>MCP tools, fully inspectable</h2>
         <p>Connect a local or remote MCP server and follow the whole handoff: schema, generated arguments, approval, result.
-          Inspect server status and logs, filter individual tools, and see what a past model turn actually received.</p>
+          Check server status and logs, filter individual tools, and see what a past model turn actually received.</p>
       </li>
       <li>
         <h2>AGPLv3 application, permissive extension SDK</h2>
@@ -190,12 +242,9 @@
 
   <div class="section">
     <h2>Who's building this?</h2>
-    <p class="lede">I've spent more than 30 years building tools for developers and creators, including
-      <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
-      <a href="https://juce.com" target="_blank" rel="noopener">JUCE</a> and
-      <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>.</p>
-    <p class="lede">Juggler came from the same instinct: if I'm going to spend a substantial part of my working life in a
-      tool, its interface and foundations need to hold up. This is the coding-agent workbench I want to use.</p>
+    <p class="lede">I'm Julian Storer. I've been building tools for developers and musicians since the 1990s, and these
+      days most of my own work happens through a coding agent. Juggler exists because I wanted that tool to be worth
+      living in. And somehow I seem to have ended up writing it myself...</p>
   </div>
 
   <div class="section">

@@ -5,7 +5,7 @@ Guidance for AI agents working in this repository.
 ## What this is
 
 `juggler-studio` is the **marketing / landing-page site** for the Juggler app
-(the AI coding workbench), deployed at [juggler.studio](https://juggler.studio).
+(the AI coding harness), deployed at [juggler.studio](https://juggler.studio).
 It is a small **static site**: plain HTML, CSS, and JavaScript served as files
 (GitHub Pages). This repo is *not* the Juggler app itself — that lives at
 `github.com/juggler-ai/juggler`.

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Workspaces in Juggler</title>
+<meta name="description" content="A workspace is where a conversation's tools run. Give each agent a git worktree, a throwaway scratch copy, or one folder of a monorepo — and run several on one project without them treading on each other." />
+<link rel="canonical" href="https://juggler.studio/workspaces.html" />
+
+<!-- Icons -->
+<link rel="icon" href="assets/flat-logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/flat-logo.svg" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Juggler" />
+<meta property="og:title" content="Workspaces in Juggler" />
+<meta property="og:description" content="Give each agent a git worktree, a throwaway scratch copy, or one folder of a monorepo — and run several on one project without them treading on each other." />
+<meta property="og:url" content="https://juggler.studio/workspaces.html" />
+<meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Workspaces in Juggler" />
+<meta name="twitter:description" content="Give each agent a git worktree, a throwaway scratch copy, or one folder of a monorepo — and run several on one project at once." />
+<meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <a href="/"><img class="wm" src="assets/juggler-wordmark.svg" alt="Juggler"></a>
+    <div class="topbar-right">
+      <a class="gh-top" href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+    </div>
+  </header>
+
+  <main>
+
+  <h1>A workspace is where a conversation's tools run.</h1>
+  <p class="lede">It's where <span class="q">bash</span> executes, and what <span class="q">read</span>,
+    <span class="q">write</span> and <span class="q">edit</span> paths are relative to. Every project already has one —
+    itself.</p>
+  <p class="lede">The workspace itself is an abstraction: an <em>environment</em> for those tools, provided by a
+    plugin. The conversation just works in whatever environment it's given — a git worktree on another branch, a
+    throwaway copy of the tree, one folder of a monorepo — and neither knows nor cares which. That indifference is the
+    point: it's what lets several agents share one project without treading on each other, or on you, and lets a
+    conversation move somewhere else without noticing.</p>
+
+  <div class="section">
+    <h2>Three providers, out of the box</h2>
+    <ul class="points">
+      <li>
+        <h2>Git worktree</h2>
+        <p>Another branch of the same repository, checked out in a tree of its own. An agent works on the branch without
+          disturbing the tree you're looking at; a per-repo setup hook installs dependencies before the first command
+          runs. Files are isolated — ports, databases and machine state are not, and Juggler doesn't pretend
+          otherwise.</p>
+      </li>
+      <li>
+        <h2>Scratch copy</h2>
+        <p>A throwaway copy of the tree, for experiments you might want to walk away from. Apply the changes back when
+          they earn it — refusing any file the project changed in the meantime — or delete the whole thing. Works with
+          or without git.</p>
+      </li>
+      <li>
+        <h2>Project folder</h2>
+        <p>No checkout at all: the conversation simply works in one subfolder — one package or service of a monorepo.
+          Commands are confined to the folder; reads still see the whole project. Focus, not isolation.</p>
+      </li>
+    </ul>
+    <p class="lede">These three aren't the end of it: more kinds of place — an ssh host, a container — are on the
+      way.</p>
+  </div>
+
+  <div class="section">
+    <h2>Workspaces live in the tab strip</h2>
+    <p class="lede">Conversations sharing a workspace are drawn together in a box named after it, with a dot when the
+      tree holds uncommitted work. Select the box itself and you get the workspace panel: what kind of place it is,
+      where it is on disk, its git status, and the ways of finishing with it.</p>
+    <figure class="lead-shot">
+      <image-slot id="shot-ws-boxes" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-workspaces.webp" placeholder="screenshot"></image-slot>
+      <figcaption class="cap"><b>Boxes in the tab strip, panel below.</b> Each box is a workspace, each tab inside it a conversation working there; the selected box shows its panel.</figcaption>
+    </figure>
+  </div>
+
+  <div class="section">
+    <h2>Conversations move; workspaces outlive them</h2>
+    <p class="lede">Several conversations can share one workspace, and none of them owns it — a workspace outliving the
+      conversations that used it is normal. Moving a conversation is a tab action: pick a different workspace from its
+      context menu, or drag the tab into another box.</p>
+    <p class="lede">Finishing is on the workspace's own terms. A worktree offers to commit its branch or discard it; a
+      scratch copy applies back or gets deleted; a project folder needs no ending at all.</p>
+  </div>
+
+  <div class="section">
+    <h2>Providers are extensions</h2>
+    <p class="lede">The built-in providers are written against the same Apache-2.0
+      <a href="extensions.html">extension SDK</a> that everything else in Juggler uses — so a new kind of place
+      doesn't have to wait for us.</p>
+  </div>
+
+  <div class="section downloads" data-dl-app="desktop">
+    <div class="dl-cta">
+      <a class="dl-btn" data-dl-primary href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v8.5m0 0L4.5 6.5M8 10l3.5-3.5M2.5 13h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="dl-os" data-dl-label="Download for %s">Download</span></a>
+      <p class="dl-os-list">
+        <a data-dl-os="darwin" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">macOS</a>
+        <span class="sp">·</span>
+        <a data-dl-os="windows" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Windows</a>
+        <span class="sp">·</span>
+        <a data-dl-os="linux" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Linux</a>
+      </p>
+    </div>
+    <p class="get-note">Free to download. Open source. No Juggler account. No Electron.</p>
+  </div>
+
+  </main>
+
+  <footer class="foot">
+    <div class="row">
+      <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+      <span class="sp">·</span>
+      <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener">Discord</a>
+      <span class="sp">·</span>
+      <a href="/">juggler.studio</a>
+      <span class="copy-r">© 2026 Julian Storer</span>
+    </div>
+  </footer>
+
+</div>
+<script src="image-slot.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>
