@@ -177,6 +177,12 @@ video.shot{object-fit:contain;}
 .dl-os-list a{color:var(--ink);text-decoration:none;}
 .dl-os-list a:hover{color:var(--accent);}
 .dl-os-list .sp{color:var(--rule);}
+/* the Homebrew one-liner: one click selects the whole command, and on a narrow
+   screen it scrolls sideways rather than wrapping, so a copy stays one line */
+.dl-brew{margin:1.125rem 0 0;font-size:.9375rem;color:var(--ink-2);}
+.dl-brew code{display:inline-block;max-width:100%;overflow-x:auto;white-space:nowrap;vertical-align:bottom;
+  font-family:var(--mono);font-size:.8125rem;background:var(--paper);padding:.0625rem .375rem;
+  border:.0625rem solid var(--rule);border-radius:.1875rem;user-select:all;}
 
 /* footer */
 .foot{margin-top:6.5rem;font-size:.875rem;color:var(--ink-3);}
