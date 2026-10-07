@@ -91,7 +91,9 @@ image-slot,.shot{display:block;width:100%;height:auto;}
 /* Screen-recording MP4s are 1280 wide at whatever height they were captured —
    each slot carries that clip's own ratio, so they fit without distortion. */
 video.shot{object-fit:contain;}
-#shot-threads,#shot-inspect{aspect-ratio:640/373;}
+#shot-threads,#shot-inspect{aspect-ratio:16/9;}
+/* Stills whose shape differs from the default: each slot carries its own. */
+#shot-main,#shot-workspaces,#shot-extra-1,#shot-extra-2{aspect-ratio:960/613;}
 #shot-svg{aspect-ratio:160/117;}
 .shot::part(frame){background:transparent;}
 /* A wide shot sits a touch narrower than the column, centred. */
@@ -101,8 +103,8 @@ video.shot{object-fit:contain;}
 /* Paired screens: a desktop shot beside a phone shot, sharing one caption.
    Vertically centred on a common row; the phone stays narrow. */
 .screens-row{display:flex;gap:1.5rem;align-items:center;justify-content:center;}
-.shot-screen-lg{aspect-ratio:1920/1501;flex:1 1 auto;min-width:0;max-width:20rem;}
-.shot-screen-sm{aspect-ratio:574/1280;flex:0 0 auto;width:6rem;}
+.shot-screen-lg{aspect-ratio:960/757;flex:1 1 auto;min-width:0;max-width:20rem;}
+.shot-screen-sm{aspect-ratio:600/1299;flex:0 0 auto;width:6rem;}
 .cap{margin-top:.75rem;font-size:.84375rem;color:var(--ink-3);line-height:1.5;text-align:center;}
 .cap b{color:var(--ink-2);font-weight:500;}
 
