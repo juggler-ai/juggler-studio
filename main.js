@@ -121,6 +121,81 @@
   });
 })();
 
+// Copy buttons for one-line commands. Each `code[data-copy]` is wrapped with a
+// button that puts its text on the clipboard. Built here rather than in the
+// HTML, so without JS the chip stays a plain one-click-selectable command and
+// no dead button shows. Where the clipboard API is refused (an insecure origin,
+// a denied permission), the button selects the command instead, ready for ⌘C.
+(function () {
+  'use strict';
+
+  var COPY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M10.5 3.5v-.5A1.5 1.5 0 0 0 9 1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>';
+  var DONE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+  var RESET_MS = 1600;
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+
+  function selectText(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function attach(code) {
+    var wrap = document.createElement('span');
+    wrap.className = 'cmd';
+    code.parentNode.insertBefore(wrap, code);
+    wrap.appendChild(code);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cmd-copy';
+    btn.setAttribute('aria-label', 'Copy command');
+    btn.title = 'Copy';
+    btn.innerHTML = COPY_ICON;
+    wrap.appendChild(btn);
+
+    var status = document.createElement('span');
+    status.className = 'sr-only';
+    status.setAttribute('role', 'status');
+    wrap.appendChild(status);
+
+    var timer = 0;
+    function done() {
+      btn.classList.add('copied');
+      btn.innerHTML = DONE_ICON;
+      btn.title = 'Copied';
+      status.textContent = 'Copied to clipboard';
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        btn.classList.remove('copied');
+        btn.innerHTML = COPY_ICON;
+        btn.title = 'Copy';
+        status.textContent = '';
+      }, RESET_MS);
+    }
+
+    btn.addEventListener('click', function () {
+      var text = code.textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { selectText(code); });
+      } else {
+        selectText(code);
+      }
+    });
+  }
+
+  ready(function () {
+    var list = document.querySelectorAll('code[data-copy]');
+    for (var i = 0; i < list.length; i++) attach(list[i]);
+  });
+})();
+
 // Per-OS download links. The page ships with releases/latest hrefs as a no-JS
 // fallback; here we read the per-OS asset URLs from the /juggler-version.json
 // endpoint (the same one the app's update check uses — served dynamically by

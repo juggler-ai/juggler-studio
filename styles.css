@@ -184,6 +184,20 @@ video.shot{object-fit:contain;}
   font-family:var(--mono);font-size:.8125rem;background:var(--paper);padding:.0625rem .375rem;
   border:.0625rem solid var(--rule);border-radius:.1875rem;user-select:all;}
 
+/* a copyable command (main.js wraps code[data-copy]): the chip and its copy
+   button joined into one pill that never wraps — the chip scrolls instead */
+.cmd{display:inline-flex;align-items:stretch;max-width:100%;vertical-align:bottom;}
+.cmd code{min-width:0;border-radius:.1875rem 0 0 .1875rem;}
+.cmd-copy{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:1.75rem;padding:0;
+  background:var(--paper);color:var(--ink-3);border:.0625rem solid var(--rule);border-left:0;
+  border-radius:0 .1875rem .1875rem 0;cursor:pointer;}
+.cmd-copy svg{width:.875rem;height:.875rem;display:block;}
+.cmd-copy:hover{color:var(--accent);}
+.cmd-copy:focus-visible{outline:.125rem solid var(--accent);outline-offset:.125rem;}
+.cmd-copy.copied{color:var(--code-name);}
+.sr-only{position:absolute;width:.0625rem;height:.0625rem;margin:-.0625rem;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
 /* footer */
 .foot{margin-top:6.5rem;font-size:.875rem;color:var(--ink-3);}
 .foot .row{display:flex;gap:1.25rem;flex-wrap:wrap;align-items:center;}
