@@ -1,17 +1,17 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:08.913
+00:00:00.000 --> 00:00:08.826
 A group boxes related conversations together.
 
 2
-00:00:08.913 --> 00:00:16.315
+00:00:08.826 --> 00:00:16.779
 A git worktree is a workspace with its own branch and folder.
 
 3
-00:00:16.315 --> 00:00:22.837
+00:00:16.779 --> 00:00:23.271
 A conversation started in it runs in the worktree.
 
 4
-00:00:22.837 --> 00:00:26.442
+00:00:23.271 --> 00:00:26.874
 Its panel commits the work, or fast-forwards tally to it.
