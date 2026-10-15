@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Juggler — a GUI-first AI coding harness</title>
-<meta name="description" content="The agent loop is the easy part. Juggler is a GUI-first AI coding harness from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
+<title>Juggler — the control surface for coding agents</title>
+<meta name="description" content="The control surface for coding agents. Juggler is a GUI-first AI coding harness from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
 <link rel="canonical" href="https://juggler.studio/" />
 
 <!-- Icons -->
@@ -14,8 +14,8 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Juggler" />
-<meta property="og:title" content="Juggler — a GUI-first AI coding harness" />
-<meta property="og:description" content="A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
+<meta property="og:title" content="Juggler — the control surface for coding agents" />
+<meta property="og:description" content="The control surface for coding agents. A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
 <meta property="og:url" content="https://juggler.studio/" />
 <meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -23,8 +23,8 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Juggler — a GUI-first AI coding harness" />
-<meta name="twitter:description" content="A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: Go server, CRDT conversations, branching threads, everything inspectable." />
+<meta name="twitter:title" content="Juggler — the control surface for coding agents" />
+<meta name="twitter:description" content="The control surface for coding agents. A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: Go server, CRDT conversations, branching threads, everything inspectable." />
 <meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,7 @@
   <main>
 
   <h1>The agent loop is the easy part.</h1>
-  <p class="lede">Juggler is a GUI-first AI coding harness, built by Julian Storer
+  <p class="lede">Juggler is the control surface for coding agents, built by Julian Storer
     (<a href="https://juce.com" target="_blank" rel="noopener">JUCE</a>,
     <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
     <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>). It's a native Go server,
@@ -62,26 +62,101 @@
     <li>Direct to your provider</li>
   </ul>
 
-  <figure class="section lead-shot">
-    <image-slot id="shot-main" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-main.webp" placeholder="screenshot"></image-slot>
-    <figcaption class="cap">Tool calls, item properties and nested sub-threads laid out in a Finder-style Miller column view</figcaption>
-  </figure>
+  <div class="section lead-shot">
+    <figure class="clip">
+      <video id="clip-hero" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-hero.jpg" aria-label="An Explore thread reads the code, the fix lands with its diff, and the suite passes"><source src="assets/clip-hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-hero.mp4" type="video/mp4"></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+    </figure>
+  </div>
 
   <div class="section">
-    <h2>Under the hood</h2>
+    <h2>Your agent's conversation is a tree, not a log file.</h2>
+    <p class="lede">Branch at any point: send a tangent, a delegated task or a competing approach into a sub-thread, and
+      bring back only its result instead of pouring the whole excursion into your main context.</p>
+    <figure class="clip">
+      <video id="clip-threads" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-threads.jpg" aria-label="A question goes to an Explore thread, which reads the code and sends back its answer"><source src="assets/clip-threads.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-threads.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-threads.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+  </div>
+
+  <div class="section">
+    <h2>See everything, edit anything</h2>
+    <p class="lede">An agent's context should not be a sealed container. Open any step to see what it did, down to the
+      request the model was sent and what came back. Delete or rewind any part of the history, fork a new conversation
+      from any point, expand a thread back into its parent — and undo any of it.</p>
+    <figure class="clip">
+      <video id="clip-inspect" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-inspect.jpg" aria-label="Stepping through a finished fix item by item, ending on the model transaction behind the reply"><source src="assets/clip-inspect.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-inspect.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-inspect.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+    <figure class="clip">
+      <video id="clip-history" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-history.jpg" aria-label="A tangent deleted from the conversation, then brought back with Command-Z"><source src="assets/clip-history.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-history.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-history.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+  </div>
+
+  <div class="section">
     <ul class="points">
       <li>
-        <h2>A native app and a matching server</h2>
-        <p>The backend is Go; the interface is type-checked JavaScript served directly, with no frontend compilation step.
-          Conversations are Yjs documents, so every connected client converges on the same live state.</p>
+        <h2>A desktop interface for long sessions</h2>
+        <p>Using a coding agent means reading and editing substantial amounts of text. Juggler gives that work a proper
+          interface: Miller-column navigation and focused views, built for long sessions.</p>
       </li>
       <li>
-        <h2>A state machine, not a while-loop</h2>
-        <p>The turn cycle — model, tools, approval, next call — advances by named state transitions in the conversation
-          document, not by a loop holding it all in memory. An approval is a state rather than a blocked process, so a
-          turn can be interrupted anywhere and carry on later as if nothing had happened.</p>
+        <h2>Branching is recursive</h2>
+        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go.</p>
+      </li>
+      <li>
+        <h2>Everything important is inspectable</h2>
+        <p>Open tool arguments, approvals and results in their own views. Open any model transaction: system prompt,
+          messages, tool definitions, output, token use, timing, stop reason.</p>
       </li>
     </ul>
+  </div>
+
+  <div class="section">
+    <h2>You decide what runs</h2>
+    <p class="lede">A command is judged piece by piece, and only the parts that can change something ask first. A Yes can
+      save a rule as narrow as the command itself, and every rule is listed where it can be edited or removed.</p>
+    <figure class="clip">
+      <video id="clip-approvals" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-approvals.jpg" aria-label="A chained command needs approval only for npm test; a saved rule lets the rerun through"><source src="assets/clip-approvals.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-approvals.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-approvals.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+  </div>
+
+  <div class="section">
+    <h2>Several agents at once</h2>
+    <p class="lede">An agent can hand work to new conversations, which run side by side while you watch the one you
+      choose. To keep them from treading on each other, each can work in its own workspace — a git worktree on another
+      branch, a throwaway scratch copy, or one folder of a monorepo.</p>
+    <figure class="clip">
+      <video id="clip-handoff" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-handoff.jpg" aria-label="The agent hands two tasks to new conversations; Command-J goes to the one waiting for approval"><source src="assets/clip-handoff.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-handoff.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-handoff.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+    <figure class="clip">
+      <video id="clip-workspaces" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-workspaces.jpg" aria-label="Two conversations boxed into a group, then a git worktree with a conversation of its own"><source src="assets/clip-workspaces.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-workspaces.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-workspaces.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+    <p class="lede"><a href="workspaces.html">How workspaces work →</a></p>
+  </div>
+
+  <div class="section">
+    <h2>One session, every screen</h2>
+    <p class="lede">Launch the desktop app and everything runs locally. When the project lives on a dev box or server,
+      run Juggler there instead: the session lives with the code, and every connected client — app, browser, phone —
+      stays in sync.</p>
+    <figure class="clip">
+      <video id="clip-clients" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-clients.jpg" aria-label="The desktop waits for approval; Yes on a phone on the same session, and the desktop carries on"><source src="assets/clip-clients.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-clients.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-clients.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
+    <p class="lede">Every build reaches a session over your local network. The official binaries add Direct P2P and
+      Cloudflare Tunnel, for reaching it from anywhere.</p>
   </div>
 
   <div class="section">
@@ -89,6 +164,11 @@
     <p class="lede">Juggler is assembled from a small set of abstractions, and every one of them is a capability an
       extension can supply — even read, write and bash go through the public SDK. There is no privileged inner
       tier.</p>
+    <figure class="clip">
+      <video id="clip-extensions" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-extensions.jpg" aria-label="Juggler Core in Settings, Extensions; switching off Execute Command takes bash out of the tool list"><source src="assets/clip-extensions.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-extensions.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-extensions.vtt" default></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
+    </figure>
     <pre class="codeblock caps-code"><code><span class="c">// A tool the model can call: a JSON schema in, an approval gate if</span>
 <span class="c">// it's destructive, a structured result out.</span>
 import <span class="n">ContextItem</span> from <span class="s">'juggler/context-item'</span>;
@@ -120,72 +200,20 @@ import <span class="n">PinboardItem</span> from <span class="s">'juggler/pinboar
   </div>
 
   <div class="section">
-    <h2>Your agent's conversation is a tree, not a log file.</h2>
-    <p class="lede">Branch at any point: send a tangent, a delegated task or a competing approach into a sub-thread, and
-      bring back only its result instead of pouring the whole excursion into your main context.</p>
-  </div>
-
-  <div class="section two">
-    <figure>
-      <video id="shot-threads" class="shot shot-square" autoplay loop muted playsinline><source src="assets/screen-recording-threads.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/screen-recording-threads.mp4" type="video/mp4"></video>
-      <figcaption class="cap"><b>Branching threads.</b> Sub-threads, all the way down.</figcaption>
-    </figure>
-    <figure>
-      <video id="shot-inspect" class="shot shot-square" autoplay loop muted playsinline><source src="assets/screen-recording-properties.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/screen-recording-properties.mp4" type="video/mp4"></video>
-      <figcaption class="cap"><b>Inspect anything.</b> Properties, history and context.</figcaption>
-    </figure>
-  </div>
-
-  <div class="section">
+    <h2>Under the hood</h2>
     <ul class="points">
       <li>
-        <h2>A desktop interface for long sessions</h2>
-        <p>Using a coding agent means reading and editing substantial amounts of text. Juggler gives that work a proper
-          interface: Miller-column navigation and focused views, built for long sessions.</p>
+        <h2>A native app and a matching server</h2>
+        <p>The backend is Go; the interface is type-checked JavaScript served directly, with no frontend compilation step.
+          Conversations are Yjs documents, so every connected client converges on the same live state.</p>
       </li>
       <li>
-        <h2>Branching is recursive</h2>
-        <p>A sub-thread can have sub-threads. Explore a tangent or a competing approach as deep as it needs to go.</p>
-      </li>
-      <li>
-        <h2>Everything important is inspectable</h2>
-        <p>Open tool arguments, approvals and results in their own views. Open any model transaction: system prompt,
-          messages, tool definitions, output, token use, timing, stop reason.</p>
+        <h2>A state machine, not a while-loop</h2>
+        <p>The turn cycle — model, tools, approval, next call — advances by named state transitions in the conversation
+          document, not by a loop holding it all in memory. An approval is a state rather than a blocked process, so a
+          turn can be interrupted anywhere and carry on later as if nothing had happened.</p>
       </li>
     </ul>
-  </div>
-
-  <div class="section">
-    <h2>Give each agent its own place to work</h2>
-    <p class="lede">Run several conversations on one project without them treading on each other: each works in its own
-      workspace — a git worktree on another branch, a throwaway scratch copy, or one folder of a monorepo.</p>
-    <figure class="lead-shot">
-      <image-slot id="shot-workspaces" class="shot shot-wide" shape="rect" fit="contain" src="assets/screenshot-workspaces.webp" placeholder="screenshot"></image-slot>
-      <figcaption class="cap"><b>Workspaces in the tab strip.</b> Conversations sharing a workspace are boxed together.</figcaption>
-    </figure>
-    <p class="lede"><a href="workspaces.html">How workspaces work →</a></p>
-  </div>
-
-  <div class="section">
-    <h2>Run it where the code lives</h2>
-    <p class="lede">Launch the desktop app and everything runs locally. When the project lives on a dev box or server,
-      run Juggler there instead: the session lives with the code, and every connected client — app, browser, phone —
-      stays in sync.</p>
-  </div>
-
-  <figure class="section screens">
-    <div class="screens-row">
-      <image-slot id="shot-large" class="shot shot-screen-lg" shape="rect" fit="contain" src="assets/screenshot-large.webp" placeholder="screenshot"></image-slot>
-      <image-slot id="shot-mobile" class="shot shot-screen-sm" shape="rect" fit="contain" src="assets/screenshot-mobile.webp" placeholder="screenshot"></image-slot>
-    </div>
-    <figcaption class="cap"><b>Big screen or pocket-sized.</b> One live session, in the desktop app or a browser.</figcaption>
-  </figure>
-
-  <div class="section">
-    <h2>The Context Surgeon</h2>
-    <p class="lede">An agent's context should not be a sealed container. Open the assembled system prompt and tools,
-      fold history into a new thread, move items between branches, expand a branch back into its parent — and undo any
-      of it.</p>
   </div>
 
   <div class="section">
@@ -229,17 +257,6 @@ import <span class="n">PinboardItem</span> from <span class="s">'juggler/pinboar
     </ul>
   </div>
 
-  <div class="section two">
-    <figure>
-      <image-slot id="shot-extra-1" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-browser.webp" placeholder="screenshot"></image-slot>
-      <figcaption class="cap"><b>A session supports multiple clients.</b> Desktop and browser views stay in sync.</figcaption>
-    </figure>
-    <figure>
-      <image-slot id="shot-extra-2" class="shot shot-square" shape="rect" fit="contain" src="assets/screenshot-extensions.webp" placeholder="screenshot"></image-slot>
-      <figcaption class="cap"><b>Built on extensions.</b> The LLM-facing tools use the same public SDK available to you.</figcaption>
-    </figure>
-  </div>
-
   <div class="section">
     <h2>Who's building this?</h2>
     <p class="lede">I'm Julian Storer. I've been building tools for developers and musicians since the 1990s, and these
@@ -255,9 +272,12 @@ import <span class="n">PinboardItem</span> from <span class="s">'juggler/pinboar
     <p class="lede">Constructive feedback is welcome on the <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener"><svg class="di" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.036a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"></path></svg>Discord</a>.</p>
   </div>
 
-  <figure class="section">
-    <video id="shot-svg" class="shot shot-wide" src="assets/screen-recording-pelican.mp4" aria-label="A reply drawing an SVG of a pelican riding a bicycle as it streams in" autoplay loop muted playsinline></video>
-  </figure>
+  <div class="section">
+    <figure class="clip clip-pelican">
+      <video id="shot-svg" class="shot clip-video" muted loop playsinline controls preload="metadata" src="assets/screen-recording-pelican.mp4" aria-label="A reply drawing an SVG of a pelican riding a bicycle as it streams in"></video>
+      <div class="clip-progress" aria-hidden="true"><span></span></div>
+    </figure>
+  </div>
 
   <div class="section downloads" data-dl-app="desktop">
     <div class="get">

@@ -91,20 +91,23 @@ image-slot,.shot{display:block;width:100%;height:auto;}
 /* Screen-recording MP4s are 1280 wide at whatever height they were captured —
    each slot carries that clip's own ratio, so they fit without distortion. */
 video.shot{object-fit:contain;}
-#shot-threads,#shot-inspect{aspect-ratio:16/9;}
-/* Stills whose shape differs from the default: each slot carries its own. */
-#shot-main,#shot-workspaces,#shot-extra-1,#shot-extra-2{aspect-ratio:960/613;}
-#shot-svg{aspect-ratio:160/117;}
 .shot::part(frame){background:transparent;}
 /* A wide shot sits a touch narrower than the column, centred. */
 .shot-wide{max-width:40rem;margin-inline:auto;}
 /* Lead/hero shot: less air above. */
 .lead-shot{margin-top:3.25rem;}
-/* Paired screens: a desktop shot beside a phone shot, sharing one caption.
-   Vertically centred on a common row; the phone stays narrow. */
-.screens-row{display:flex;gap:1.5rem;align-items:center;justify-content:center;}
-.shot-screen-lg{aspect-ratio:960/757;flex:1 1 auto;min-width:0;max-width:20rem;}
-.shot-screen-sm{aspect-ratio:600/1299;flex:0 0 auto;width:6rem;}
+/* Clips: one per row, the slot's width, 16:9. main.js plays each while it is
+   in view and pauses it when it leaves, draws its progress line, and sets its
+   current caption cue as page text under it. The caption line reserves two
+   lines so the page never moves as cards change; without JS the video keeps its
+   controls and the browser draws the captions itself. */
+.clip{max-width:40rem;margin:1.75rem auto 0;}
+.clip + .clip{margin-top:2.5rem;}
+.clip-video{aspect-ratio:16/9;border-radius:.375rem;background:var(--paper-2);}
+.clip-pelican .clip-video{aspect-ratio:160/117;background:transparent;}
+.clip-progress{height:.125rem;margin-top:.5rem;background:var(--rule);border-radius:.0625rem;overflow:hidden;}
+.clip-progress span{display:block;height:100%;background:var(--accent);transform-origin:left center;transform:scaleX(0);}
+.clip-cap{margin:.625rem 0 0;min-height:2.8rem;font-size:1rem;line-height:1.4;color:var(--ink-2);}
 .cap{margin-top:.75rem;font-size:.84375rem;color:var(--ink-3);line-height:1.5;text-align:center;}
 .cap b{color:var(--ink-2);font-weight:500;}
 
@@ -226,7 +229,10 @@ video.shot{object-fit:contain;}
   .lede a .di{width:1rem;height:1rem;vertical-align:-.15rem;margin-right:.25rem;}
   .section{margin-top:4rem;}
   .two,.get{grid-template-columns:1fr;gap:1.75rem;}
-  .screens-row{gap:1rem;}
-  .shot-screen-sm{width:6.5rem;}
   .foot .copy-r{margin-left:0;width:100%;margin-top:.25rem;}
+  .clip-cap{font-size:.9375rem;}
+}
+/* A narrow phone can wrap a card to three lines: reserve three. */
+@media (max-width:30rem){
+  .clip-cap{min-height:3.95rem;}
 }

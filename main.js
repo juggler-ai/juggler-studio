@@ -121,6 +121,79 @@
   });
 })();
 
+// The page's clips (figure.clip): each plays while at least half of it is in
+// view and pauses when it leaves, with a thin progress line under it, and its
+// current caption cue set as page text in its .clip-cap line — the page's size
+// and colours on any screen, which a caption burned into the picture can't be.
+// The cues come from the video's own <track>, switched to hidden so the browser
+// stops drawing them. Without JS (or IntersectionObserver), or when the reader
+// asks for reduced motion, the video keeps its controls and nothing plays by
+// itself; the captions still reach the page line when JS is there to put them.
+(function () {
+  'use strict';
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+
+  function captions(video, line) {
+    var track = video.textTracks && video.textTracks[0];
+    if (!line || !track) return;
+    track.mode = 'hidden';
+    track.addEventListener('cuechange', function () {
+      var cues = track.activeCues;
+      line.textContent = cues && cues.length ? cues[0].text : '';
+    });
+  }
+
+  ready(function () {
+    var clips = document.querySelectorAll('figure.clip');
+    if (!clips.length) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var watching = !reduce && 'IntersectionObserver' in window;
+    var playing = [];
+
+    for (var i = 0; i < clips.length; i++) {
+      var video = clips[i].querySelector('video');
+      if (!video) continue;
+      captions(video, clips[i].querySelector('.clip-cap'));
+      video._bar = clips[i].querySelector('.clip-progress span');
+      if (watching) video.removeAttribute('controls');
+    }
+    if (!watching) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      for (var j = 0; j < entries.length; j++) {
+        var v = entries[j].target;
+        var seen = entries[j].isIntersecting && entries[j].intersectionRatio >= 0.5;
+        var at = playing.indexOf(v);
+        if (seen) {
+          var started = v.play();
+          if (started && started.catch) started.catch(function () { /* autoplay refused: the poster stays */ });
+          if (at === -1) playing.push(v);
+        } else {
+          v.pause();
+          if (at !== -1) playing.splice(at, 1);
+        }
+      }
+    }, { threshold: [0, 0.5] });
+    for (var k = 0; k < clips.length; k++) {
+      var vid = clips[k].querySelector('video');
+      if (vid) observer.observe(vid);
+    }
+
+    // The progress lines, drawn only while something is playing.
+    (function draw() {
+      for (var m = 0; m < playing.length; m++) {
+        var p = playing[m];
+        if (p._bar && p.duration) p._bar.style.transform = 'scaleX(' + (p.currentTime / p.duration) + ')';
+      }
+      window.requestAnimationFrame(draw);
+    })();
+  });
+})();
+
 // Copy buttons for one-line commands. Each `code[data-copy]` is wrapped with a
 // button that puts its text on the clipboard. Built here rather than in the
 // HTML, so without JS the chip stays a plain one-click-selectable command and

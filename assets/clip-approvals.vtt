@@ -1,0 +1,13 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:06.311
+Only npm test needs permission. The rest is read-only.
+
+2
+00:00:07.736 --> 00:00:10.942
+The rerun doesn't ask. The rule covers it.
+
+3
+00:00:11.825 --> 00:00:15.694
+Rules are listed here, and can be edited or removed.
