@@ -17,8 +17,8 @@ There is no bundler or app build step. To view the site:
 - `./scripts/serve.sh` (local static server, optional port arg), or
 - open `index.html` directly in a browser.
 
-External runtime dependencies (React, ReactDOM, Babel Standalone, Google Fonts)
-are loaded from CDNs via `<script>`/`<link>` tags.
+The only external runtime dependency is Google Fonts, loaded via `<link>` tags.
+The pages load no third-party scripts.
 
 **Validation:** after installing dev packages with `npm install`, run
 `./scripts/check.sh` before handing off changes. It runs Stylelint (`lint:css`)
@@ -38,15 +38,14 @@ not invoke `npm run ...` or other lint/check commands directly;
 | `juggler-version.json` | **Template** for the version-check endpoint, which reads it from this repo and overlays the latest release's data onto it. Edit editorial copy / `match` patterns only; never hand-edit version numbers (see the file's `$comment`). |
 | `scripts/` | `check.sh` (the validation entry point), `serve.sh` (local static server), and `validate-static-site.js` (the checks it runs). |
 | `image-slot.js` | `<image-slot>` web component — a user-fillable image placeholder. Carries its own usage docs in a `/* BEGIN USAGE */` block at the top. |
-| `tweaks-panel.jsx` | Reusable "Tweaks" panel + form-control helpers (React, compiled in-browser by Babel). Usage docs in its header comment. |
 | `assets/` | `juggler-logo.svg`, `juggler-wordmark.svg`. |
 
 ## Conventions
 
 - **Vanilla everything.** No framework on the page itself. `main.js` is a plain
   ES5-style IIFE; keep DOM scripts unobtrusive and degrade gracefully.
-- **Use `rem` for CSS lengths.** All CSS length units in HTML, CSS, and scaffold
-  component style strings should be `rem` unless the value is unitless (`0`,
+- **Use `rem` for CSS lengths.** All CSS length units in HTML, CSS, and the scaffold
+  component's style strings should be `rem` unless the value is unitless (`0`,
   `line-height`, `fr`, percentages, colors, transforms, etc.). Stylelint enforces
   this by disallowing `px`, `em`, viewport units, physical units, and `ch`.
 - **Match the existing house style** in `styles.css` (compact multi-property
@@ -63,16 +62,15 @@ served from `juggler.studio`.
 production. `validate-static-site.js` cross-checks the list against what the
 pages reference, so `./scripts/check.sh` catches the omission first.
 
-## Scaffold components — leave the markers alone
+## Scaffold component — leave the markers alone
 
-`image-slot.js` and `tweaks-panel.jsx` are "omelette starter scaffold" files
-brought in from a prototyping runtime. They begin with
-`// @ds-adherence-ignore` and contain `/* BEGIN USAGE */ … /* END USAGE */`
-docs and `EDITMODE-BEGIN/END` markers. When editing them:
+`image-slot.js` is an "omelette starter scaffold" file brought in from a
+prototyping runtime. It begins with `// @ds-adherence-ignore` and contains
+`/* BEGIN USAGE */ … /* END USAGE */` docs. When editing it:
 
-- Read their header usage block first — it documents every attribute/prop.
-- Do **not** strip the `@ds-adherence-ignore`, `BEGIN USAGE`, or `EDITMODE`
-  markers; tooling relies on them.
+- Read its header usage block first — it documents every attribute.
+- Do **not** strip the `@ds-adherence-ignore` or `BEGIN USAGE` markers;
+  tooling relies on them.
 - `<image-slot>` persists dropped images to a `.image-slots.state.json`
   sidecar via the host bridge, and that write is only permitted at the project
   root — so HTML using it must stay at the repo root.
