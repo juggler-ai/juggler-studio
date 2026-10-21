@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Juggler — the control surface for coding agents</title>
-<meta name="description" content="The control surface for coding agents. Juggler is a GUI-first AI coding harness from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
+<title>Juggler — for developers who don't trust a black box</title>
+<meta name="description" content="Juggler is the coding agent you can see inside. Open any step and see exactly what the model was sent and what came back; branch, rewind, edit and undo. Claude Code, Codex, Copilot, Gemini and Ollama behind one interface, direct to your provider. Open source, no account, from the developer behind JUCE, Tracktion and Cmajor." />
 <link rel="canonical" href="https://juggler.studio/" />
 
 <!-- Icons -->
@@ -14,8 +14,8 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Juggler" />
-<meta property="og:title" content="Juggler — the control surface for coding agents" />
-<meta property="og:description" content="The control surface for coding agents. A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: a native Go server, conversations as CRDTs, branching threads, and every model transaction inspectable." />
+<meta property="og:title" content="Juggler — for developers who don't trust a black box" />
+<meta property="og:description" content="The coding agent you can see inside. Open any step and see exactly what the model was sent and what came back; branch, rewind, edit and undo. Claude Code, Codex, Copilot, Gemini and Ollama behind one interface, direct to your provider. Open source, no account." />
 <meta property="og:url" content="https://juggler.studio/" />
 <meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -23,8 +23,8 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Juggler — the control surface for coding agents" />
-<meta name="twitter:description" content="The control surface for coding agents. A GUI-first AI coding harness with real foundations, from the developer behind JUCE, Tracktion and Cmajor: Go server, CRDT conversations, branching threads, everything inspectable." />
+<meta name="twitter:title" content="Juggler — for developers who don't trust a black box" />
+<meta name="twitter:description" content="The coding agent you can see inside. Open any step and see exactly what the model was sent and what came back; branch, rewind, edit and undo. One interface for Claude Code, Codex, Copilot, Gemini and Ollama. Open source, no account." />
 <meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,12 +48,16 @@
 
   <main>
 
-  <h1>The agent loop is the easy part.</h1>
-  <p class="lede">Juggler is the control surface for coding agents, built by Julian Storer
+  <h1>For developers who don't trust a black box.</h1>
+  <p class="lede">Your coding agent is one. Juggler opens it: open any step of any session and see exactly what the
+    model was sent and what came back — system prompt, tools, tokens, cache, timing. Branch, rewind, edit and undo any
+    of it. Claude Code, Codex, Copilot, Gemini and Ollama behind one interface, direct to your provider with nothing
+    in between.</p>
+  <p class="lede">Built by Julian Storer
     (<a href="https://juce.com" target="_blank" rel="noopener">JUCE</a>,
     <a href="https://www.tracktion.com" target="_blank" rel="noopener">Tracktion</a>,
-    <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>). It's a native Go server,
-    conversations are CRDTs synced live to local and remote clients, and no Electron in sight.</p>
+    <a href="https://cmajor.dev" target="_blank" rel="noopener">Cmajor</a>): a native Go server, conversations as CRDTs
+    synced live to every client, and no Electron in sight.</p>
   <ul class="chips">
     <li>Open source</li>
     <li>Free</li>
@@ -61,12 +65,18 @@
     <li>Vendor-neutral</li>
     <li>Direct to your provider</li>
   </ul>
+  <div class="dl-cta" data-dl-app="desktop">
+    <a class="dl-btn" data-dl-primary href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v8.5m0 0L4.5 6.5M8 10l3.5-3.5M2.5 13h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="dl-os" data-dl-label="Open it — download for %s">Open it — download</span></a>
+    <p class="dl-os-list"><a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener">or read the source</a></p>
+  </div>
 
   <div class="section lead-shot">
     <figure class="clip">
-      <video id="clip-hero" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-hero.jpg" aria-label="An Explore thread reads the code, the fix lands with its diff, and the suite passes"><source src="assets/clip-hero.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-hero.mp4" type="video/mp4"></video>
+      <video id="clip-inspect" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-inspect.jpg" aria-label="Stepping through a finished fix item by item, ending on the model transaction behind the reply: the system prompt, messages, tool definitions, output and token use the model actually saw"><source src="assets/clip-inspect.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-inspect.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-inspect.vtt" default></video>
       <div class="clip-progress" aria-hidden="true"><span></span></div>
+      <p class="clip-cap" aria-hidden="true"></p>
     </figure>
+    <p class="cap">Every step of a finished fix, down to the request the model was sent. <b>Nothing in Juggler is sealed.</b></p>
   </div>
 
   <div class="section">
@@ -81,15 +91,10 @@
   </div>
 
   <div class="section">
-    <h2>See everything, edit anything</h2>
-    <p class="lede">An agent's context should not be a sealed container. Open any step to see what it did, down to the
-      request the model was sent and what came back. Delete or rewind any part of the history, fork a new conversation
-      from any point, expand a thread back into its parent — and undo any of it.</p>
-    <figure class="clip">
-      <video id="clip-inspect" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-inspect.jpg" aria-label="Stepping through a finished fix item by item, ending on the model transaction behind the reply"><source src="assets/clip-inspect.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-inspect.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-inspect.vtt" default></video>
-      <div class="clip-progress" aria-hidden="true"><span></span></div>
-      <p class="clip-cap" aria-hidden="true"></p>
-    </figure>
+    <h2>Edit anything, undo any of it</h2>
+    <p class="lede">A box you can see into is only half of it; the context should be yours to change. Delete or rewind
+      any part of the history, fork a new conversation from any point, expand a thread back into its parent — and undo
+      any of it.</p>
     <figure class="clip">
       <video id="clip-history" class="shot clip-video" muted loop playsinline controls preload="none" poster="assets/clip-history.jpg" aria-label="A tangent deleted from the conversation, then brought back with Command-Z"><source src="assets/clip-history.av1.mp4" type='video/mp4; codecs="av01.0.08M.08"'><source src="assets/clip-history.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="assets/clip-history.vtt" default></video>
       <div class="clip-progress" aria-hidden="true"><span></span></div>

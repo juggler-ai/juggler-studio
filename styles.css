@@ -146,9 +146,9 @@ video.shot{object-fit:contain;}
   .section{display:grid;grid-template-columns:var(--margin-col) minmax(0,1fr);column-gap:2rem;align-content:start;}
   .section > *{grid-column:2;}
   .section:has(> h2)::before{grid-column:1;grid-row:1;margin:.5rem 0 0;}
-  .section > .clip,.section > figure{grid-column:1 / -1;}
+  .section > .clip,.section > figure,.lead-shot > .cap{grid-column:1 / -1;}
   .section.downloads{display:block;}
-  main > h1,main > .lede,main > .chips{margin-left:calc(var(--margin-col) + 2rem);}
+  main > h1,main > .lede,main > .chips,main > .dl-cta{margin-left:calc(var(--margin-col) + 2rem);}
 }
 
 /* Click-to-zoom (lightbox). main.js tags every clickable shot .shot-zoom and
