@@ -48,6 +48,7 @@ html,body{min-height:100%;}
   font-family:var(--mono);font-size:.75rem;letter-spacing:.06rem;text-transform:uppercase;text-decoration:none;}
 .gh-top svg{width:1rem;height:1rem;display:block;fill:currentColor;}
 .gh-top:hover{color:var(--accent);}
+.topnav{display:flex;align-items:center;gap:1.75rem;}
 
 /* download button */
 .dl{position:relative;}
@@ -57,6 +58,26 @@ html,body{min-height:100%;}
   cursor:pointer;text-decoration:none;white-space:nowrap;}
 .dl-btn svg{width:.875rem;height:.875rem;display:block;}
 .dl-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--paper);}
+/* the secondary hero action: same shape, outlined, so the download stays first */
+.dl-btn-2{background:transparent;color:var(--ink);}
+
+/* the platform line under the hero buttons, read like a datasheet footnote */
+.platforms{margin:.875rem 0 0;font-family:var(--mono);font-size:.75rem;color:var(--ink-3);}
+.platforms .sp{color:var(--rule);margin:0 .25rem;}
+
+/* "works with": the provider marks as one quiet ruled row. The marks are
+   black single-colour SVGs, so dark mode inverts them as it does the wordmark. */
+.works{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.5rem;margin:2.25rem 0 0;padding:.875rem 0;
+  border-top:.0625rem solid var(--rule);border-bottom:.0625rem solid var(--rule);}
+.works-k{margin:0;font-family:var(--mono);font-size:.6875rem;letter-spacing:.13rem;text-transform:uppercase;}
+.works-k a{color:var(--accent);text-decoration:none;}
+.works-logos{display:flex;flex-wrap:wrap;align-items:center;gap:.625rem 1.375rem;margin:0;padding:0;list-style:none;}
+.works-logos li{display:inline-flex;align-items:center;gap:.4375rem;
+  font-family:var(--mono);font-size:.75rem;color:var(--ink-2);white-space:nowrap;}
+.works-logos img,.providers img{width:1.125rem;height:1.125rem;display:block;flex:0 0 auto;
+  filter:var(--wm-filter);opacity:.8;}
+.works-more a{color:var(--ink-3);text-decoration:none;}
+.works-more a:hover{color:var(--accent);}
 
 h1{font-weight:600;font-size:3.25rem;line-height:1.06;letter-spacing:-.075rem;margin:0 0 1.5rem;
   max-width:46rem;text-wrap:balance;}
@@ -148,7 +169,8 @@ video.shot{object-fit:contain;}
   .section:has(> h2)::before{grid-column:1;grid-row:1;margin:.5rem 0 0;}
   .section > .clip,.section > figure,.lead-shot > .cap{grid-column:1 / -1;}
   .section.downloads{display:block;}
-  main > h1,main > .lede,main > .chips,main > .dl-cta{margin-left:calc(var(--margin-col) + 2rem);}
+  main > h1,main > .lede,main > .chips,main > .dl-cta,main > .platforms,main > .works,main > .feat-index{
+    margin-left:calc(var(--margin-col) + 2rem);}
 }
 
 /* Click-to-zoom (lightbox). main.js tags every clickable shot .shot-zoom and
@@ -190,6 +212,64 @@ video.shot{object-fit:contain;}
 .points p{margin:0;color:var(--ink-2);font-size:.9375rem;line-height:1.55;}
 .points code{font-family:var(--mono);font-size:.8125rem;}
 
+.more-link{margin-top:1.5rem;}
+.more-link a{font-weight:500;}
+
+/* where a request goes: three ruled cells left to right, an arrow between */
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:1.75rem 0 0;padding:0;
+  list-style:none;border-top:.0625rem solid var(--ink);border-bottom:.0625rem solid var(--rule);}
+.flow li{position:relative;padding:.875rem 1.5rem .875rem 0;font-size:.9375rem;line-height:1.45;color:var(--ink-2);}
+.flow li + li{padding-left:1.5rem;border-left:.0625rem solid var(--rule);}
+.flow li + li::before{content:'→';position:absolute;left:-.4375rem;top:.75rem;padding:0 .0625rem;
+  background:var(--paper);color:var(--accent);font-family:var(--mono);font-size:.8125rem;}
+.flow .k{display:block;margin-bottom:.25rem;font-family:var(--mono);font-size:.6875rem;font-weight:500;
+  letter-spacing:.06rem;text-transform:uppercase;color:var(--ink);}
+
+/* the provider list, grouped by how you sign in */
+.providers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.75rem 2.5rem;margin:2rem 0 1.5rem;}
+.providers h3{margin:0 0 .625rem;padding-bottom:.5rem;border-bottom:.0625rem solid var(--rule);
+  font-family:var(--mono);font-size:.6875rem;font-weight:500;letter-spacing:.13rem;text-transform:uppercase;color:var(--accent);}
+.providers ul{margin:0;padding:0;list-style:none;}
+.providers li{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 .625rem;padding:.3125rem 0;font-size:.9375rem;color:var(--ink);}
+.providers li img,.providers .glyph{align-self:center;}
+.providers .glyph{display:inline-flex;align-items:center;justify-content:center;width:1.125rem;height:1.125rem;flex:0 0 auto;
+  font-family:var(--mono);font-size:.625rem;font-weight:500;color:var(--paper);background:var(--ink-2);border-radius:.125rem;}
+.providers li > span:not(.glyph){flex-basis:100%;padding-left:1.75rem;font-size:.8125rem;color:var(--ink-3);}
+.providers code{font-family:var(--mono);font-size:.75rem;}
+
+/* FAQ: one ruled row per question; the marker is a mono +/−, not the triangle */
+.faq{border-top:.0625rem solid var(--ink);}
+.faq details{border-bottom:.0625rem solid var(--rule);}
+.faq summary{display:flex;justify-content:space-between;gap:1.25rem;padding:.9375rem 0;cursor:pointer;list-style:none;
+  font-weight:600;font-size:1.0625rem;line-height:1.35;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::after{content:'+';flex:0 0 auto;font-family:var(--mono);font-weight:500;color:var(--accent);}
+.faq details[open] summary::after{content:'−';}
+.faq summary:hover{color:var(--accent);}
+.faq summary:focus-visible{outline:.125rem solid var(--accent);outline-offset:.125rem;}
+.faq p{margin:0 0 1rem;max-width:42rem;color:var(--ink-2);font-size:.9375rem;line-height:1.6;}
+.faq p:last-child{margin-bottom:1.25rem;}
+.faq b{color:var(--ink);font-weight:600;}
+.faq code{font-family:var(--mono);font-size:.8125rem;}
+
+/* features page: a jump index of mono cells, then one ruled two-column list of
+   one-line features per section */
+.feat-index{display:flex;flex-wrap:wrap;gap:.375rem 1.25rem;margin:2.25rem 0 0;padding:.875rem 0;
+  border-top:.0625rem solid var(--ink);border-bottom:.0625rem solid var(--rule);
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.04rem;text-transform:uppercase;}
+.feat-index a{color:var(--ink-2);text-decoration:none;white-space:nowrap;}
+.feat-index a:hover{color:var(--accent);}
+.feats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:2.5rem;margin:.5rem 0 0;padding:0;
+  list-style:none;border-top:.0625rem solid var(--ink);}
+.feats li{position:relative;padding:.5625rem 0 .5625rem 1.125rem;border-bottom:.0625rem solid var(--rule);
+  font-size:.9375rem;line-height:1.5;color:var(--ink-2);}
+.feats li::before{content:'+';position:absolute;left:0;top:.5625rem;font-family:var(--mono);color:var(--accent);}
+.feats code{font-family:var(--mono);font-size:.8125rem;color:var(--ink);}
+.feats kbd{font-size:.75rem;}
+.tag{display:inline-block;padding:0 .375rem;border:.0625rem solid var(--accent);border-radius:.125rem;
+  font-family:var(--mono);font-size:.625rem;font-weight:500;letter-spacing:.06rem;text-transform:uppercase;
+  line-height:1.6;color:var(--accent);vertical-align:.0625rem;}
+
 /* code blocks (extensions page) — scroll sideways rather than wrap, so a copied
    line stays a copyable line */
 .codeblock{font-family:var(--mono);font-size:.8125rem;line-height:1.7;margin:1.5rem 0 1.5rem;
@@ -199,8 +279,10 @@ video.shot{object-fit:contain;}
 .section p code{font-family:var(--mono);font-size:.84375rem;}
 
 /* get / install */
+/* the panel's own heavy top edge heads the pair, so the cards carry no rule of
+   their own — just a hairline between them */
 .get{display:grid;grid-template-columns:1fr 1fr;gap:2.75rem;}
-.get .card{border-top:.125rem solid var(--ink);padding-top:1.25rem;}
+.get .card + .card{margin-left:-1.375rem;padding-left:1.375rem;border-left:.0625rem solid var(--rule);}
 .get .k{font-family:var(--mono);font-size:.6875rem;letter-spacing:.13rem;text-transform:uppercase;
   color:var(--accent);margin:0 0 .75rem;}
 .get h2{font-weight:600;font-size:1.375rem;letter-spacing:-.02rem;margin:0 0 .625rem;}
@@ -276,8 +358,15 @@ video.shot{object-fit:contain;}
   .section{margin-top:3.5rem;}
   .chips li,.chips li + li{padding:.5rem .875rem .5rem 0;border-left:0;}
   .points{grid-template-columns:1fr;}
+  .topbar-right{flex-wrap:wrap;gap:.875rem 1.125rem;}
+  .topnav{gap:1.125rem;}
+  .flow,.providers,.feats{grid-template-columns:1fr;}
+  .flow li,.flow li + li{padding:.75rem 0;border-left:0;}
+  .flow li + li{border-top:.0625rem solid var(--rule);}
+  .flow li + li::before{content:'↓';left:auto;right:0;}
   .points li,.points li:nth-child(2n){padding:1rem 0 1.125rem;border-left:0;}
   .two,.get{grid-template-columns:1fr;gap:1.75rem;}
+  .get .card + .card{margin-left:0;padding:1.5rem 0 0;border-left:0;border-top:.0625rem solid var(--rule);}
   .downloads{padding:1.5rem 1.25rem 1.375rem;}
   .foot .copy-r{margin-left:0;width:100%;margin-top:.25rem;}
   .clip-cap{font-size:.9375rem;}

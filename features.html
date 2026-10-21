@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Everything Juggler does, one line each</title>
+<meta name="description" content="Every feature of Juggler, the coding agent you can see inside, one line each: inspection, branching and undo, approvals, seventeen model providers, MCP, workspaces, remote clients, extensions and more." />
+<link rel="canonical" href="https://juggler.studio/features.html" />
+
+<!-- Icons -->
+<link rel="icon" href="assets/flat-logo.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/flat-logo.svg" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Juggler" />
+<meta property="og:title" content="Everything Juggler does, one line each" />
+<meta property="og:description" content="Every feature of Juggler, the coding agent you can see inside, one line each." />
+<meta property="og:url" content="https://juggler.studio/features.html" />
+<meta property="og:image" content="https://juggler.studio/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Everything Juggler does, one line each" />
+<meta name="twitter:description" content="Every feature of Juggler, the coding agent you can see inside, one line each." />
+<meta name="twitter:image" content="https://juggler.studio/assets/og-image.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <a href="/"><img class="wm" src="assets/juggler-wordmark.svg" alt="Juggler"></a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Site">
+        <a class="gh-top" href="/#faq">FAQ</a>
+        <a class="gh-top" href="extensions.html">Extensions</a>
+      </nav>
+      <a class="gh-top" href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>GitHub</a>
+    </div>
+  </header>
+
+  <main>
+
+  <h1>Everything it does, one line each.</h1>
+  <p class="lede">The <a href="/">front page</a> makes the argument. This is the inventory: what's in the box today, one
+    line per feature, so you can find out whether it does the thing you need without reading a manual. Anything marked
+    <span class="tag">official</span> is in the official download, not in a build from source.</p>
+
+  <nav class="feat-index" aria-label="Sections">
+    <a href="#inspect">Inspecting</a>
+    <a href="#tree">Threads &amp; sub-agents</a>
+    <a href="#history">History &amp; undo</a>
+    <a href="#approvals">Approvals</a>
+    <a href="#models">Models</a>
+    <a href="#context">Context</a>
+    <a href="#tools">Tools</a>
+    <a href="#mcp">MCP</a>
+    <a href="#workspaces">Workspaces</a>
+    <a href="#parallel">Many conversations</a>
+    <a href="#review">Pinboard &amp; review</a>
+    <a href="#files">Files</a>
+    <a href="#clients">Clients &amp; remote</a>
+    <a href="#extend">Extending it</a>
+    <a href="#interface">Interface</a>
+    <a href="#install">Install &amp; run</a>
+    <a href="#data">Your data</a>
+  </nav>
+
+  <div class="section" id="inspect">
+    <h2>Inspecting what the model saw</h2>
+    <ul class="feats">
+      <li>Open any finished turn's model transaction: system prompt, messages, tool schemas and output.</li>
+      <li>Every transaction shows token use, cache reads and writes, stop reason and timing.</li>
+      <li>Click the token count in the footer to open the round trip it came from.</li>
+      <li>The System Prompt item shows the assembled prompt and every tool, grouped by source.</li>
+      <li>Tools a strategy is withholding this turn are shown struck through, not hidden.</li>
+      <li>Every item's properties show what it costs in tokens.</li>
+      <li>Cache stats tell "the provider reported zero" apart from "the provider didn't say".</li>
+      <li>A warning before you send says when the next request will miss the prompt cache, and why.</li>
+      <li>Tool calls, arguments, approvals and results each open in a view of their own.</li>
+      <li>Settings shows exactly what each strategy tells the model.</li>
+      <li>System prompt presets: browse, save, delete, and pick a default.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="tree">
+    <h2>Threads and sub-agents</h2>
+    <ul class="feats">
+      <li>A conversation is a tree, navigated in Finder-style Miller columns.</li>
+      <li>Branch a sub-thread from any point with <code>/thread</code>, or let the model open one.</li>
+      <li>Sub-threads nest as deep as they need to, and can be resumed later.</li>
+      <li>A thread returns only its result to the parent, not the whole excursion.</li>
+      <li>Explore: a read-only sub-agent that investigates the codebase and reports back.</li>
+      <li>Research: a sub-agent that reads the web and returns only the answer.</li>
+      <li>Read-only sub-agents run in parallel, each with its own spinner and timer.</li>
+      <li>Expand a thread back into its parent when the detail turns out to matter.</li>
+      <li>Copy a thread, with the context it inherited, into a new conversation.</li>
+      <li>The model can open new conversations of its own to fan work out.</li>
+      <li>A token budget for each sub-agent run, and a spend ceiling for each conversation.</li>
+      <li>Extensions can ship sub-agents of their own.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="history">
+    <h2>History, editing and undo</h2>
+    <ul class="feats">
+      <li>Rewind a conversation to any message.</li>
+      <li>Fork a new conversation from any message.</li>
+      <li>Delete a single item, everything after a point, or everything before it.</li>
+      <li>Re-run a tool command from its item.</li>
+      <li>Undo and redo every structural change: <kbd>⌘Z</kbd>, <kbd>⇧⌘Z</kbd>.</li>
+      <li>A delete or rewind offers Undo right where it happened.</li>
+      <li>Closed conversations go to a Bin you can restore from, with its size on disk shown.</li>
+      <li><code>/duplicate</code> clones a conversation; <code>/clear</code> empties it.</li>
+      <li><code>/compact</code> folds the history into a summary thread you can still open.</li>
+      <li><code>/handoff</code> summarises the work into a fresh conversation, named for you.</li>
+      <li>Copy a conversation as Markdown, or export it as a self-contained HTML page.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="approvals">
+    <h2>Approvals and strategies</h2>
+    <ul class="feats">
+      <li>Four strategies, switched with <kbd>⇧⇥</kbd>: Default, Auto-approve, Read-only and YOLO.</li>
+      <li>Auto-approve has a cheap model wave through the obviously safe calls and ask you about the rest.</li>
+      <li>Its reviewer can be balanced, relaxed, or follow a policy you write.</li>
+      <li>Read-only refuses anything that could change a file.</li>
+      <li>Even YOLO stops for plan approval and for questions it asks you.</li>
+      <li>Shell commands are parsed, so only the parts that can change something ask first.</li>
+      <li>Auto-approval follows <code>cd</code>, and copes with multi-line commands and quoted newlines.</li>
+      <li>"Don't ask again" saves a rule as narrow as the command, editable before it's saved.</li>
+      <li>Every saved rule is listed where it can be edited or removed.</li>
+      <li>File edits can be allowed or asked about per conversation, with <kbd>⌘E</kbd>.</li>
+      <li>Writing outside the project always asks.</li>
+      <li>Denying one call in a batch refuses the rest of it.</li>
+      <li>Hooks can deny, hold or annotate any tool call, from a folder or from an extension.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="models">
+    <h2>Models and providers</h2>
+    <ul class="feats">
+      <li>Claude Code: your Pro or Max plan, through your own unmodified <code>claude</code> CLI.</li>
+      <li>OpenAI Codex: any ChatGPT plan, free included, via the Codex CLI or ChatGPT app login.</li>
+      <li>GitHub Copilot: sign in with GitHub or reuse an editor's login; free plan and GitHub Enterprise Cloud work.</li>
+      <li>API keys for Anthropic, OpenAI, Google Gemini, Mistral, DeepSeek, Moonshot Kimi and Z.AI GLM.</li>
+      <li>OpenRouter, with its presets and free models, and OpenCode Zen.</li>
+      <li>Local models with no key: Ollama, LM Studio, llama.cpp and LocalAI.</li>
+      <li>Any number of custom OpenAI-compatible endpoints, each with its own URL, headers and models.</li>
+      <li>ACP agents: drive external agents that speak the Agent Client Protocol.</li>
+      <li>Switch model or provider mid-conversation, even mid-turn.</li>
+      <li>Thinking levels per model, cycled with <kbd>⌥⌘T</kbd>, including off where the model allows.</li>
+      <li>Priority speed tiers on the models that offer one.</li>
+      <li>Cycle recent models with <kbd>⌥⌘M</kbd>; <kbd>⌥⇧⌘M</kbd> opens the full picker.</li>
+      <li>Hide models or whole providers you never use.</li>
+      <li>Override any model's context window and maximum output.</li>
+      <li>A cheap background model names tabs, reviews approvals and suggests prompts — or turn it off.</li>
+      <li>First launch finds the agent CLIs you already have installed.</li>
+      <li>A sidebar card shows your usage and quota.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="context">
+    <h2>Context management</h2>
+    <ul class="feats">
+      <li>Every request is measured before it's sent, with room kept for the answer.</li>
+      <li>Older history is compacted into a summary thread when it outgrows the window — nothing is thrown away.</li>
+      <li>Automatic compaction can be switched off.</li>
+      <li>A request that still won't fit is trimmed and retried, not failed.</li>
+      <li>Tool results are sized to the model's window.</li>
+      <li>An @-mentioned file is frozen as it was when you sent it.</li>
+      <li>Large pastes collapse into pills instead of flooding the composer.</li>
+      <li><code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.cursorrules</code> and similar files are read automatically.</li>
+      <li>Project memory: durable facts the agent records in <code>.juggler/MEMORY.md</code>, private to the checkout.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="tools">
+    <h2>Tools the agent has</h2>
+    <ul class="feats">
+      <li><code>read</code>, <code>write</code> and <code>edit</code>, plus batched reads and searches.</li>
+      <li><code>grep</code> and <code>glob</code> built on ripgrep, respecting nested <code>.gitignore</code>.</li>
+      <li><code>bash</code>, with long-running background tasks.</li>
+      <li>Read, stop and stream background tasks; <code>Monitor</code> turns their output into events.</li>
+      <li>Oversized command output spills to a file instead of the context.</li>
+      <li><code>WebFetch</code> reads a page, or asks a sub-agent one question about it.</li>
+      <li><code>WebFetch</code> returns an image URL as the image itself.</li>
+      <li><code>WebSearch</code> with no API key; Exa search is an optional extension.</li>
+      <li><code>query_code</code>: one sandboxed script in place of a dozen reads and greps.</li>
+      <li><code>run_code</code>: a script that calls tools, each approved as if called directly.</li>
+      <li>Scripts can attach images to their results, so the model sees them.</li>
+      <li><code>plan</code>: an approach proposed for your sign-off, then tracked step by step.</li>
+      <li><code>todo</code>: a checklist the agent keeps as it works.</li>
+      <li><code>AskUserQuestion</code>: multiple-choice questions when it needs a decision.</li>
+      <li><code>define_command</code>: the agent can save a workflow as a slash command, with your approval.</li>
+      <li>The agent can show you a report or mock-up by writing an HTML file and pinning it.</li>
+      <li>Juggler can explain itself: the agent can read its own manual and SDK source.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="mcp">
+    <h2>MCP</h2>
+    <ul class="feats">
+      <li>Local stdio servers, and remote servers over streamable HTTP or SSE.</li>
+      <li>Configure per project, for every project, or in Settings.</li>
+      <li>Live server status, logs and a Restart button.</li>
+      <li>Allow or deny individual tools, and fix default arguments.</li>
+      <li>Pre-approve a server you trust.</li>
+      <li>Images from MCP tools reach the model.</li>
+      <li><code>/mcp</code> lists and controls servers from the composer.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="workspaces">
+    <h2>Workspaces</h2>
+    <ul class="feats">
+      <li>Git worktree: another branch, in a tree of its own, with a per-repo setup hook.</li>
+      <li>Scratch copy: a throwaway copy to experiment in, git or not, applied back file by file.</li>
+      <li>Subfolder: confine commands to one package of a monorepo.</li>
+      <li>Group: a named box for related conversations, and nothing more.</li>
+      <li>Workspaces show as boxes in the tab strip, with a dot for uncommitted work.</li>
+      <li>Move a conversation by dragging its tab into another box.</li>
+      <li>Finish a worktree by committing or discarding it, a copy by applying or deleting it.</li>
+      <li>New kinds of workspace can come from extensions.</li>
+    </ul>
+    <p class="lede more-link"><a href="workspaces.html">How workspaces work →</a></p>
+  </div>
+
+  <div class="section" id="parallel">
+    <h2>Many conversations at once</h2>
+    <ul class="feats">
+      <li>Conversations in tabs, named automatically from what you asked.</li>
+      <li><kbd>⌘J</kbd> jumps to the next conversation waiting on you.</li>
+      <li>Tabs needing attention can highlight, or float to the top.</li>
+      <li>Step through conversations with Page Up and Page Down; reorder them with Shift.</li>
+      <li>Pause a turn with <kbd>⇧⎋</kbd> without cutting off a tool or a reply mid-flight.</li>
+      <li>Choose what Escape does: stop, pause, ask first, need a double press, or only clear.</li>
+      <li>Schedule a message for a set time, or for the end of the current turn.</li>
+      <li>Suggested next prompts, and starter prompts in a new conversation.</li>
+      <li>Chimes when a conversation needs you, in several voices, with volume and preview.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="review">
+    <h2>Pinboard and code review</h2>
+    <ul class="feats">
+      <li>A Pinboard beside the conversation, toggled with <kbd>⌥⌘P</kbd>.</li>
+      <li>Pin a live file, the project tree, the plan, the todo list, project memory or running tasks.</li>
+      <li>Pop a pinboard out into its own window or browser tab.</li>
+      <li>The Git pin reviews every repository under the project, with branch and upstream drift.</li>
+      <li>Review uncommitted, staged, unstaged, branch or last-commit changes — or any <code>git diff</code> range.</li>
+      <li>Comment on lines of a diff, then send all the comments to the agent at once.</li>
+      <li>Diffs side by side or unified, with as much context as you want, up to the whole file.</li>
+      <li>Right-click any selection to put a reference to it in the prompt.</li>
+      <li>Git status and task-progress cards in the sidebar.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="files">
+    <h2>Files and rendering</h2>
+    <ul class="feats">
+      <li>Replies render Markdown, HTML and inline SVG as they stream.</li>
+      <li>Syntax highlighting for many languages and build files.</li>
+      <li>HTML files shown as the page they describe, in a sandbox, with the source a click away.</li>
+      <li>PDFs page by page — and the model reads their text.</li>
+      <li>Markdown preview for <code>.md</code> files.</li>
+      <li>Images, HEIC and TIFF included, with pinch and scroll zoom.</li>
+      <li>Video and audio play in place.</li>
+      <li>Drop files into the conversation to show them to the model.</li>
+      <li>New file viewers can come from extensions.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="clients">
+    <h2>Clients and remote access</h2>
+    <ul class="feats">
+      <li>A native desktop app, with no Electron.</li>
+      <li>The same session in any browser, at the same time, kept in sync live.</li>
+      <li>A touch layout for phones and tablets.</li>
+      <li>Several windows at once with <kbd>⇧⌘N</kbd>.</li>
+      <li>A count of connected clients in the header.</li>
+      <li>LAN access from Settings → Connectivity, with a QR code to scan.</li>
+      <li>Local names such as <code>mymac.local</code> work.</li>
+      <li>Works behind a reverse proxy such as <code>tailscale serve</code>.</li>
+      <li>Remote viewers keep their own sound, Escape and diff settings.</li>
+      <li>Sessions survive quits, relaunches and dropped connections — approvals included.</li>
+      <li>Direct P2P: reach a session from anywhere over WebRTC. <span class="tag">official</span></li>
+      <li>Cloudflare Tunnel: reach a session through your own <code>cloudflared</code>. <span class="tag">official</span></li>
+    </ul>
+  </div>
+
+  <div class="section" id="extend">
+    <h2>Extending it</h2>
+    <ul class="feats">
+      <li>Every built-in tool, strategy and command is an extension on the public SDK.</li>
+      <li>Extensions can add tools, strategies, slash commands, sidebar cards, pins, file viewers and workspace kinds.</li>
+      <li>Extensions can declare settings and secrets, edited in the Extensions view.</li>
+      <li>Every extension and every capability can be switched off individually.</li>
+      <li>Extensions hot-reload when you save.</li>
+      <li><code>juggler ext init</code> scaffolds a working extension; <code>validate</code>, <code>link</code> and <code>add</code> do the rest.</li>
+      <li>The SDK and bundled extensions are Apache-2.0, so yours can be closed source.</li>
+      <li>Custom slash commands are markdown files, no code — in Claude Code's format.</li>
+      <li>Commands can send, insert a draft, or run in their own sub-thread with their own model.</li>
+      <li>Agent Skills, including those in <code>.agents/skills</code>, loaded only when a task needs one.</li>
+      <li>A skills marketplace installs skills from GitHub; type <code>$</code> to use one by hand.</li>
+    </ul>
+    <p class="lede more-link"><a href="extensions.html">Writing an extension →</a></p>
+  </div>
+
+  <div class="section" id="interface">
+    <h2>Interface</h2>
+    <ul class="feats">
+      <li>Find with <kbd>⌘F</kbd> in the conversation, the Pinboard or a properties view.</li>
+      <li>Zoom and font size, remembered per project.</li>
+      <li>Light, dark, or following the system.</li>
+      <li>Collapse runs of tool calls into one group with <kbd>⌥⌘G</kbd>.</li>
+      <li>Move through items with <kbd>⌥↑</kbd> and <kbd>⌥↓</kbd> without leaving the message box.</li>
+      <li>Every shortcut listed with <kbd>⌘/</kbd>.</li>
+      <li>Drafts are kept if you switch away mid-sentence.</li>
+      <li>Tips in new conversations, for the features you haven't found yet.</li>
+      <li>Proxy settings: system, direct or manual.</li>
+      <li>Logs viewable inside the app.</li>
+    </ul>
+  </div>
+
+  <div class="section" id="install">
+    <h2>Install and run</h2>
+    <ul class="feats">
+      <li>macOS 14+ on Apple Silicon, signed and notarized.</li>
+      <li>Homebrew: <code>brew install --cask juggler-ai/tap/juggler</code>.</li>
+      <li>Windows x64 installer, per-user, putting <code>juggler</code> on your PATH; runs on ARM under emulation.</li>
+      <li>Linux x64 and arm64.</li>
+      <li>Headless on a Linux server, no display needed, with a Docker recipe.</li>
+      <li><code>juggler doctor</code> checks a machine is ready to run it.</li>
+      <li><code>juggler run "…"</code> runs one prompt unattended, for CI, and exits with a status.</li>
+      <li>Build it yourself from the public source, Intel Macs included.</li>
+      <li>In-app updates on macOS and Windows. <span class="tag">official</span></li>
+    </ul>
+  </div>
+
+  <div class="section" id="data">
+    <h2>Your data</h2>
+    <ul class="feats">
+      <li>Model requests go straight from your machine to the provider you chose.</li>
+      <li>No Juggler account, and no cloud index of your code.</li>
+      <li>Conversations are files in the project's <code>.juggler</code> folder.</li>
+      <li>API keys live in one owner-only file in <code>~/.juggler</code>.</li>
+      <li><code>~/.juggler</code> is plain files: copy it to a new machine and you're set up.</li>
+      <li>A locked or interrupted session is recovered, not lost.</li>
+      <li>The whole app is open source, so none of this has to be taken on trust.</li>
+    </ul>
+  </div>
+
+  <div class="section downloads" data-dl-app="desktop">
+    <div class="dl-cta">
+      <a class="dl-btn" data-dl-primary href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v8.5m0 0L4.5 6.5M8 10l3.5-3.5M2.5 13h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="dl-os" data-dl-label="Download for %s">Download</span></a>
+      <p class="dl-os-list">
+        <a data-dl-os="darwin" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">macOS</a>
+        <span class="sp">·</span>
+        <a data-dl-os="windows" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Windows</a>
+        <span class="sp">·</span>
+        <a data-dl-os="linux" href="https://github.com/juggler-ai/juggler/releases/latest" target="_blank" rel="noopener">Linux</a>
+      </p>
+    </div>
+    <p class="dl-brew">Or on a Mac, with Homebrew: <code data-copy>brew install --cask juggler-ai/tap/juggler</code></p>
+    <p class="get-note">Free to download. Open source. No Juggler account. No Electron.</p>
+  </div>
+
+  </main>
+
+  <footer class="foot">
+    <div class="row">
+      <a href="https://github.com/juggler-ai/juggler" target="_blank" rel="noopener">GitHub</a>
+      <span class="sp">·</span>
+      <a href="https://discord.gg/HyqZwKvSMd" target="_blank" rel="noopener">Discord</a>
+      <span class="sp">·</span>
+      <a href="/">juggler.studio</a>
+      <span class="copy-r">© 2026 Julian Storer</span>
+    </div>
+  </footer>
+
+</div>
+<script src="main.js"></script>
+
+</body>
+</html>

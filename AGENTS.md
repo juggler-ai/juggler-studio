@@ -31,14 +31,15 @@ not invoke `npm run ...` or other lint/check commands directly;
 | Path | Purpose |
 |------|---------|
 | `index.html` | The landing page. Loads `styles.css`, `main.js`, and `image-slot.js`. |
-| `styles.css` | The site's stylesheet, shared by `index.html` and `404.html`. |
+| `features.html` | Every feature, one line each, grouped by area. Lines marked `official` are in the official binaries only. Keep it to what the current release ships. |
+| `styles.css` | The site's stylesheet, shared by every page. |
 | `main.js` | Click-to-zoom lightbox for the page's screenshots/recordings. Plain ES5-style IIFE. |
 | `404.html` | Not-found page; reuses the same theme tokens. |
 | `robots.txt`, `sitemap.xml`, `CNAME` | SEO basics and the GitHub Pages custom domain, pointing at `https://juggler.studio/`. |
 | `juggler-version.json` | **Template** for the version-check endpoint, which reads it from this repo and overlays the latest release's data onto it. Edit editorial copy / `match` patterns only; never hand-edit version numbers (see the file's `$comment`). |
 | `scripts/` | `check.sh` (the validation entry point), `serve.sh` (local static server), and `validate-static-site.js` (the checks it runs). |
 | `image-slot.js` | `<image-slot>` web component — a user-fillable image placeholder. Carries its own usage docs in a `/* BEGIN USAGE */` block at the top. |
-| `assets/` | `juggler-logo.svg`, `juggler-wordmark.svg`. |
+| `assets/` | `juggler-logo.svg`, `juggler-wordmark.svg`, the clips and screenshots, and `providers/` — single-colour provider marks from Simple Icons (CC0), black so dark mode can invert them. |
 
 ## Conventions
 
